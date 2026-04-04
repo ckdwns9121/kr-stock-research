@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "update-corp-codes": "python3 scripts/update-corp-codes.py"
   },
   "dependencies": {
     "cheerio": "^1.0.0",

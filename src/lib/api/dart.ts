@@ -8,6 +8,7 @@ const DART_API_KEY = process.env.DART_API_KEY ?? "";
 interface CorpEntry {
   ticker: string;
   corpCode: string;
+  market?: string;
 }
 
 let corpCodeMap: Record<string, CorpEntry> | null = null;
