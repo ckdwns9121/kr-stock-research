@@ -1,0 +1,13 @@
+{
+  "total_injections": 1,
+  "pane_counts": {
+    "%4": 1
+  },
+  "session_counts": {},
+  "recent_keys": {
+    "5761eb9eb9aed9aeefccbfcbb5e5b8f2bf71054c83f585748f3e9f7b80246ccc": 1775232273421
+  },
+  "last_injection_ts": 1775232273421,
+  "last_reason": "mode_not_allowed",
+  "last_event_at": "2026-04-04T02:10:32.863Z"
+}

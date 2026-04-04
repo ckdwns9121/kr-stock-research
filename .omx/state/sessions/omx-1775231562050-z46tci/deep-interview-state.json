@@ -1,0 +1,85 @@
+{
+  "active": false,
+  "current_phase": "complete",
+  "started_at": "2026-04-03T16:14:20Z",
+  "interview_id": "di-macro-dashboard-20260403T161420Z",
+  "profile": "standard",
+  "type": "brownfield",
+  "initial_idea": "경제 흐름을 한눈에 보는 대시보드(코스피/코스닥/나스닥, 유가/원자재, 금리 등)",
+  "rounds": [
+    {
+      "round": 1,
+      "question": "이 대시보드를 매일 볼 때, 네가 최종적으로 내리고 싶은 핵심 의사결정 1개는 뭐야?",
+      "answer": "전 세계 경제 흐름, 지표 이런것들을 한눈에 볼 수 있는 대시보드 구축하기",
+      "target_dimension": "intent",
+      "notes": "Outcome restated; concrete decision/action still unclear."
+    },
+    {
+      "round": 2,
+      "question": "이 화면을 보고 네가 실제로 하려는 행동을 하나만 고르면 뭐야?",
+      "answer": "현재 경제 상황, 주식 시황을 대시보드에서 바로 보고 섹터 상승/하락, 주도주, 섹터별 현황, 주요 뉴스, 나스닥 등을 한눈에 보고 싶다.",
+      "target_dimension": "intent",
+      "notes": "Intent clearer: quick market regime scan + sector leadership awareness. Scope expanded significantly without boundaries."
+    },
+    {
+      "round": 3,
+      "question": "v1에서 절대 안 넣을 것 3개",
+      "answer": "자동매매 신호, 사용자 커뮤니티, 실시간 틱차트",
+      "target_dimension": "non_goals",
+      "notes": "Non-goals now explicit."
+    },
+    {
+      "round": 4,
+      "question": "데이터 소스/갱신 주기/레이아웃의 의사결정 경계",
+      "answer": "데이터 소스는 네이버, 갱신주기는 실시간, 화면은 깔끔하게",
+      "target_dimension": "decision_boundaries",
+      "notes": "Source fixed to Naver; update frequency and UX style given but measurable boundary still missing. Potential conflict: real-time requirement vs non-goal tick chart."
+    },
+    {
+      "round": 5,
+      "question": "실시간의 구체 옵션(A/B/C)",
+      "answer": "준실시간",
+      "target_dimension": "constraints_tradeoff",
+      "notes": "Update strategy fixed to near-real-time(1~5 min)."
+    },
+    {
+      "round": 6,
+      "question": "v1 수치 성공기준(로딩/카드수/데이터지연)",
+      "answer": "이런게 뭐가의미가 있는데",
+      "target_dimension": "success_criteria",
+      "notes": "User challenges numeric criteria value; needs essence-level success framing first."
+    }
+  ],
+  "current_ambiguity": 0.279,
+  "threshold": 0.2,
+  "max_rounds": 12,
+  "challenge_modes_used": [
+    "contrarian",
+    "simplifier",
+    "ontologist"
+  ],
+  "codebase_context": "Next.js brownfield with existing /dashboard and market components",
+  "current_stage": "feasibility",
+  "current_focus": "success_criteria_essence",
+  "context_snapshot_path": ".omx/context/macro-dashboard-20260403T161415Z.md",
+  "readiness_gates": {
+    "non_goals_explicit": true,
+    "decision_boundaries_explicit": true,
+    "pressure_pass_complete": true
+  },
+  "iteration": 8,
+  "last_turn_at": "2026-04-03T16:26:25.745Z",
+  "scores": {
+    "intent": 0.8,
+    "outcome": 0.84,
+    "scope": 0.8,
+    "constraints": 0.74,
+    "success": 0.22,
+    "context": 0.82
+  },
+  "completed_at": "2026-04-03T16:19:40Z",
+  "final_ambiguity": 0.18,
+  "rounds_count": 7,
+  "transcript_path": ".omx/interviews/macro-dashboard-20260403T161900Z.md",
+  "spec_path": ".omx/specs/deep-interview-macro-dashboard.md"
+}

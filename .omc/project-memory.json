@@ -1,0 +1,406 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1775284962823,
+  "projectRoot": "/Users/changjun/Desktop/kr-stock-research",
+  "techStack": {
+    "languages": [
+      {
+        "name": "JavaScript/TypeScript",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "package.json"
+        ]
+      },
+      {
+        "name": "TypeScript",
+        "version": null,
+        "confidence": "high",
+        "markers": [
+          "tsconfig.json"
+        ]
+      }
+    ],
+    "frameworks": [
+      {
+        "name": "next",
+        "version": "14.2.0",
+        "category": "fullstack"
+      },
+      {
+        "name": "react",
+        "version": "18.3.0",
+        "category": "frontend"
+      },
+      {
+        "name": "react-dom",
+        "version": "18.3.0",
+        "category": "frontend"
+      }
+    ],
+    "packageManager": "npm",
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": "npm run build",
+    "testCommand": null,
+    "lintCommand": "npm run lint",
+    "devCommand": "npm run dev",
+    "scripts": {
+      "dev": "next dev",
+      "build": "next build",
+      "start": "next start",
+      "lint": "next lint"
+    }
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": "type-based"
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [
+      "public",
+      "scripts",
+      "src"
+    ],
+    "gitBranches": null
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "public": {
+      "path": "public",
+      "purpose": "Public files",
+      "fileCount": 0,
+      "lastAccessed": 1775284962806,
+      "keyFiles": []
+    },
+    "scripts": {
+      "path": "scripts",
+      "purpose": "Build/utility scripts",
+      "fileCount": 0,
+      "lastAccessed": 1775284962807,
+      "keyFiles": []
+    },
+    "src": {
+      "path": "src",
+      "purpose": "Source code",
+      "fileCount": 0,
+      "lastAccessed": 1775284962811,
+      "keyFiles": []
+    },
+    "src/app": {
+      "path": "src/app",
+      "purpose": "Application code",
+      "fileCount": 6,
+      "lastAccessed": 1775284962811,
+      "keyFiles": [
+        "error.tsx",
+        "globals.css",
+        "layout.tsx"
+      ]
+    },
+    "src/components": {
+      "path": "src/components",
+      "purpose": "UI components",
+      "fileCount": 0,
+      "lastAccessed": 1775284962811,
+      "keyFiles": []
+    },
+    "src/data": {
+      "path": "src/data",
+      "purpose": "Data files",
+      "fileCount": 1,
+      "lastAccessed": 1775284962811,
+      "keyFiles": [
+        "corp-codes.json"
+      ]
+    },
+    "src/lib": {
+      "path": "src/lib",
+      "purpose": "Library code",
+      "fileCount": 4,
+      "lastAccessed": 1775284962812,
+      "keyFiles": [
+        "constants.ts",
+        "format.ts",
+        "sectors.ts"
+      ]
+    },
+    "src/types": {
+      "path": "src/types",
+      "purpose": "Type definitions",
+      "fileCount": 6,
+      "lastAccessed": 1775284962812,
+      "keyFiles": [
+        "dashboard.ts",
+        "financial.ts",
+        "market.ts"
+      ]
+    }
+  },
+  "hotPaths": [
+    {
+      "path": "src/lib/api/naver.ts",
+      "accessCount": 7,
+      "lastAccessed": 1775219607958,
+      "type": "file"
+    },
+    {
+      "path": "src/components/layout/Header.tsx",
+      "accessCount": 7,
+      "lastAccessed": 1775221941416,
+      "type": "file"
+    },
+    {
+      "path": "src/lib/api/client.ts",
+      "accessCount": 4,
+      "lastAccessed": 1774784545847,
+      "type": "file"
+    },
+    {
+      "path": "src/components/stock/StockChart.tsx",
+      "accessCount": 4,
+      "lastAccessed": 1775218997827,
+      "type": "file"
+    },
+    {
+      "path": "src/lib/sectors.ts",
+      "accessCount": 4,
+      "lastAccessed": 1775219181048,
+      "type": "file"
+    },
+    {
+      "path": "src/components/sector/SectorGrid.tsx",
+      "accessCount": 4,
+      "lastAccessed": 1775221848534,
+      "type": "file"
+    },
+    {
+      "path": "src/app/page.tsx",
+      "accessCount": 3,
+      "lastAccessed": 1775218988714,
+      "type": "file"
+    },
+    {
+      "path": "src/components/stock/MiniChart.tsx",
+      "accessCount": 3,
+      "lastAccessed": 1775219762140,
+      "type": "file"
+    },
+    {
+      "path": "src/app/sectors/page.tsx",
+      "accessCount": 3,
+      "lastAccessed": 1775221793178,
+      "type": "file"
+    },
+    {
+      "path": "src/components/portfolio/PortfolioClient.tsx",
+      "accessCount": 3,
+      "lastAccessed": 1775221959875,
+      "type": "file"
+    },
+    {
+      "path": "src/app/watchlist/page.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1775218985918,
+      "type": "file"
+    },
+    {
+      "path": "src/lib/constants.ts",
+      "accessCount": 2,
+      "lastAccessed": 1775219004683,
+      "type": "file"
+    },
+    {
+      "path": "src/app/api/stock/overview/route.ts",
+      "accessCount": 2,
+      "lastAccessed": 1775219008676,
+      "type": "file"
+    },
+    {
+      "path": "src/types/market.ts",
+      "accessCount": 2,
+      "lastAccessed": 1775219198648,
+      "type": "file"
+    },
+    {
+      "path": "src/components/stock/MetricsCard.tsx",
+      "accessCount": 2,
+      "lastAccessed": 1775221762333,
+      "type": "file"
+    },
+    {
+      "path": "package.json",
+      "accessCount": 1,
+      "lastAccessed": 1774782870824,
+      "type": "file"
+    },
+    {
+      "path": ".env.example",
+      "accessCount": 1,
+      "lastAccessed": 1774782872426,
+      "type": "file"
+    },
+    {
+      "path": "src/app/layout.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1774782881581,
+      "type": "file"
+    },
+    {
+      "path": "src/lib/api/types.ts",
+      "accessCount": 1,
+      "lastAccessed": 1774782882010,
+      "type": "file"
+    },
+    {
+      "path": "src/lib/api/dart.ts",
+      "accessCount": 1,
+      "lastAccessed": 1774782882913,
+      "type": "file"
+    },
+    {
+      "path": "src/lib/api/krx.ts",
+      "accessCount": 1,
+      "lastAccessed": 1774782883363,
+      "type": "file"
+    },
+    {
+      "path": "src/app/stock/[ticker]/page.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1774782884707,
+      "type": "file"
+    },
+    {
+      "path": "CLAUDE.md",
+      "accessCount": 1,
+      "lastAccessed": 1774783323600,
+      "type": "file"
+    },
+    {
+      "path": "src/components/stock/CompanyHeader.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1774783782959,
+      "type": "file"
+    },
+    {
+      "path": "src/components/stock/NewsCard.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1774783784212,
+      "type": "file"
+    },
+    {
+      "path": "src/components/stock/NewsList.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1774783784302,
+      "type": "file"
+    },
+    {
+      "path": "src/app/api/stock/[ticker]/news/route.ts",
+      "accessCount": 1,
+      "lastAccessed": 1774783794784,
+      "type": "file"
+    },
+    {
+      "path": "src/app/api/news/route.ts",
+      "accessCount": 1,
+      "lastAccessed": 1774783795172,
+      "type": "file"
+    },
+    {
+      "path": "src/components/ui/Card.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1774785197935,
+      "type": "file"
+    },
+    {
+      "path": "src/app/not-found.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1774785285781,
+      "type": "file"
+    },
+    {
+      "path": "next.config.mjs",
+      "accessCount": 1,
+      "lastAccessed": 1774785285882,
+      "type": "file"
+    },
+    {
+      "path": "src/lib/format.ts",
+      "accessCount": 1,
+      "lastAccessed": 1774881647751,
+      "type": "file"
+    },
+    {
+      "path": "src/lib/utils.ts",
+      "accessCount": 1,
+      "lastAccessed": 1774881648526,
+      "type": "file"
+    },
+    {
+      "path": "src/types/stock.ts",
+      "accessCount": 1,
+      "lastAccessed": 1774881648565,
+      "type": "file"
+    },
+    {
+      "path": "src/components/market/MarketOverview.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1775218995046,
+      "type": "file"
+    },
+    {
+      "path": "src/components/market/MarketIndexCard.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1775219000725,
+      "type": "file"
+    },
+    {
+      "path": "src/app/api/market/rates/route.ts",
+      "accessCount": 1,
+      "lastAccessed": 1775219242417,
+      "type": "file"
+    },
+    {
+      "path": "src/app/api/market/movers/route.ts",
+      "accessCount": 1,
+      "lastAccessed": 1775219243340,
+      "type": "file"
+    },
+    {
+      "path": "src/app/dashboard/page.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1775219866387,
+      "type": "file"
+    },
+    {
+      "path": "src/types/financial.ts",
+      "accessCount": 1,
+      "lastAccessed": 1775221781974,
+      "type": "file"
+    },
+    {
+      "path": "src/types/portfolio.ts",
+      "accessCount": 1,
+      "lastAccessed": 1775221867275,
+      "type": "file"
+    },
+    {
+      "path": "src/hooks/usePortfolio.ts",
+      "accessCount": 1,
+      "lastAccessed": 1775221877308,
+      "type": "file"
+    },
+    {
+      "path": "src/app/portfolio/page.tsx",
+      "accessCount": 1,
+      "lastAccessed": 1775221886744,
+      "type": "file"
+    }
+  ],
+  "userDirectives": []
+}

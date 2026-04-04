@@ -1,0 +1,15 @@
+{
+  "active": false,
+  "current_phase": "complete",
+  "started_at": "2026-04-03T16:23:00Z",
+  "task_description": "macro dashboard consensus plan from deep-interview spec",
+  "input_spec": ".omx/specs/deep-interview-macro-dashboard.md",
+  "iteration": 8,
+  "last_turn_at": "2026-04-03T16:40:26.333Z",
+  "completed_at": "2026-04-03T16:30:30Z",
+  "consensus": "APPROVE",
+  "artifacts": [
+    ".omx/plans/prd-macro-dashboard.md",
+    ".omx/plans/test-spec-macro-dashboard.md"
+  ]
+}

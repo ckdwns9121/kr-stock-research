@@ -1,0 +1,48 @@
+{
+  "title": "투자지표 해설 + 섹터 비교 + 가상 포트폴리오",
+  "stories": [
+    {
+      "id": "US-001",
+      "title": "투자지표 해설 모드",
+      "description": "MetricsCard에 각 지표(PER/PBR/ROE/EV/EBITDA) 옆 ? 토글로 해설 표시",
+      "acceptanceCriteria": [
+        "MetricsCard 내 각 지표 옆에 ? 아이콘 버튼 존재",
+        "? 클릭 시 해당 지표의 설명 텍스트가 토글로 표시/숨김",
+        "설명에 지표의 의미와 판단 기준 포함",
+        "TypeScript 컴파일 에러 없음"
+      ],
+      "priority": 1,
+      "passes": false
+    },
+    {
+      "id": "US-002",
+      "title": "섹터 내 종목 비교 테이블",
+      "description": "섹터 페이지에 차트/비교 모드 전환 → 10종목 PER/PBR/ROE 테이블 비교",
+      "acceptanceCriteria": [
+        "SectorGrid에 '차트'/'비교' 모드 전환 버튼 존재",
+        "비교 모드에서 종목명, 현재가, PER, PBR, ROE 컬럼 테이블 표시",
+        "종목명 클릭 시 /stock/[ticker]로 이동",
+        "TypeScript 컴파일 에러 없음"
+      ],
+      "priority": 2,
+      "passes": false
+    },
+    {
+      "id": "US-003",
+      "title": "가상 포트폴리오",
+      "description": "/portfolio 페이지 + localStorage 기반 모의 매수/매도/수익률 추적",
+      "acceptanceCriteria": [
+        "/portfolio 페이지가 존재하고 200 응답",
+        "종목 추가 폼: 티커 입력, 매수가, 수량 입력 가능",
+        "추가된 종목이 localStorage에 저장됨",
+        "포트폴리오 목록에 종목명, 매수가, 현재가, 수익률, 평가금액 표시",
+        "종목 삭제 기능 존재",
+        "전체 포트폴리오 총 평가금액과 총 수익률 표시",
+        "Header에 '포트폴리오' 네비게이션 링크 존재",
+        "TypeScript 컴파일 에러 없음"
+      ],
+      "priority": 3,
+      "passes": false
+    }
+  ]
+}
