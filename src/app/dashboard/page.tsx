@@ -4,9 +4,14 @@ import { fetchMacroDashboardData } from "@/lib/dashboard/macro";
 import { Card, CardHeader, CardTitle } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 import { formatDate, formatPrice, formatPercent } from "@/lib/format";
-import { getChangeColor, getChangeBgColor } from "@/lib/utils";
+import { getChangeColor } from "@/lib/utils";
 import type { DataMeta, MacroMetric, SectorPerformance } from "@/types/dashboard";
-import type { MarketIndex, TrendingStock } from "@/types/market";
+import type { MarketIndex } from "@/types/market";
+import { GlobalMarketSection } from "@/components/dashboard/GlobalMarketSection";
+import type { GlobalMarketData } from "@/types/global-market";
+import { StockRankingTable } from "@/components/dashboard/StockRankingTable";
+import { MarketTickerBar } from "@/components/dashboard/MarketTickerBar";
+import type { TickerItem } from "@/components/dashboard/MarketTickerBar";
 
 export const metadata: Metadata = {
   title: "매크로 시황 대시보드 - 주식리서치",
@@ -15,31 +20,71 @@ export const metadata: Metadata = {
 
 export const revalidate = 60;
 
+async function fetchGlobalMarketData(baseUrl: string): Promise<GlobalMarketData | null> {
+  try {
+    const res = await fetch(`${baseUrl}/api/dashboard/global`, {
+      next: { revalidate: 1800 },
+    });
+    if (!res.ok) return null;
+    return (await res.json()) as GlobalMarketData;
+  } catch {
+    return null;
+  }
+}
+
 export default async function DashboardPage() {
-  const dashboard = await fetchMacroDashboardData();
+  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
+  const [dashboard, globalMarket] = await Promise.all([
+    fetchMacroDashboardData(),
+    fetchGlobalMarketData(baseUrl),
+  ]);
+
+  const tickerItems: TickerItem[] = [
+    ...dashboard.indices.items.map((idx) => ({
+      name: idx.name,
+      value: idx.value,
+      changePercent: idx.changePercent,
+    })),
+    ...(globalMarket?.indices ?? []).map((idx) => ({
+      name: idx.name,
+      value: idx.price,
+      changePercent: idx.changePercent,
+    })),
+    ...dashboard.macro.items.map((m) => ({
+      name: m.name,
+      value: m.value,
+      changePercent: m.changePercent,
+    })),
+  ];
 
   return (
     <div className="space-y-6">
+      <MarketTickerBar items={tickerItems} />
       <section className="pt-4">
-        <h1 className="text-2xl font-bold text-toss-gray-900">글로벌 매크로 대시보드</h1>
-        <p className="text-sm text-toss-gray-500 mt-1">
+        <h1 className="text-2xl font-bold text-dark-text-primary">글로벌 매크로 대시보드</h1>
+        <p className="text-sm text-dark-text-secondary mt-1">
           30초 안에 오늘의 시장 체온(Risk-on / Risk-off)과 강약 섹터를 파악하세요
         </p>
       </section>
 
-      {/* Summary */}
+      <GlobalMarketSection data={globalMarket} />
+
+      {/* 오늘의 해석 */}
       <section>
-        <Card className="border border-toss-gray-100">
+        <Card className="border border-dark-border">
           <CardHeader className="flex items-start justify-between">
             <div>
               <CardTitle className="text-base">오늘의 해석</CardTitle>
-              <p className="text-sm text-toss-gray-500 mt-1">{dashboard.summary.headline}</p>
+              <p className="text-sm text-dark-text-secondary mt-1">{dashboard.summary.headline}</p>
+              {dashboard.summary.aiComment && (
+                <p className="text-sm text-dark-text-primary mt-2 leading-relaxed">{dashboard.summary.aiComment}</p>
+              )}
             </div>
             <StatusBadge meta={dashboard.summaryMeta} />
           </CardHeader>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <Card className="bg-toss-gray-50 shadow-none p-4">
-              <p className="text-xs text-toss-gray-500 mb-1">시장 체온</p>
+            <Card className="bg-dark-elevated p-4">
+              <p className="text-xs text-dark-text-secondary mb-1">시장 체온</p>
               <div className="flex items-center gap-2">
                 <span className={`text-xl font-bold ${getRegimeColor(dashboard.summary.regime)}`}>
                   {dashboard.summary.regime}
@@ -49,15 +94,15 @@ export default async function DashboardPage() {
                 </Badge>
               </div>
             </Card>
-            <Card className="bg-toss-gray-50 shadow-none p-4">
-              <p className="text-xs text-toss-gray-500 mb-1">강한 섹터</p>
-              <p className="text-lg font-bold text-toss-gray-900">
+            <Card className="bg-dark-elevated p-4">
+              <p className="text-xs text-dark-text-secondary mb-1">강한 섹터</p>
+              <p className="text-lg font-bold text-dark-text-primary">
                 {dashboard.summary.strongSector ? `${dashboard.summary.strongSector.emoji} ${dashboard.summary.strongSector.name}` : "-"}
               </p>
             </Card>
-            <Card className="bg-toss-gray-50 shadow-none p-4">
-              <p className="text-xs text-toss-gray-500 mb-1">약한 섹터</p>
-              <p className="text-lg font-bold text-toss-gray-900">
+            <Card className="bg-dark-elevated p-4">
+              <p className="text-xs text-dark-text-secondary mb-1">약한 섹터</p>
+              <p className="text-lg font-bold text-dark-text-primary">
                 {dashboard.summary.weakSector ? `${dashboard.summary.weakSector.emoji} ${dashboard.summary.weakSector.name}` : "-"}
               </p>
             </Card>
@@ -65,11 +110,11 @@ export default async function DashboardPage() {
         </Card>
       </section>
 
-      {/* Evidence: Indices + Macro + Sector */}
+      {/* 해석 근거 */}
       <section className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-base font-semibold text-toss-gray-900">해석 근거</h2>
-          <p className="text-xs text-toss-gray-400">섹터 점수 = 평균등락률 × 0.7 + 상승종목비율 × 0.3</p>
+          <h2 className="text-base font-semibold text-dark-text-primary">해석 근거</h2>
+          <p className="text-xs text-dark-text-muted">섹터 점수 = 평균등락률 × 0.7 + 상승종목비율 × 0.3</p>
         </div>
 
         <Card>
@@ -112,21 +157,18 @@ export default async function DashboardPage() {
         </Card>
       </section>
 
-      {/* Support: Leaders + News */}
+      {/* 종목 랭킹 */}
       <section>
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-base font-semibold text-toss-gray-900">보조 정보</h2>
+          <h2 className="text-base font-semibold text-dark-text-primary">종목 랭킹</h2>
           <StatusBadge meta={dashboard.leaders.meta} />
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <MoverList title="🔺 주도 상승 Top 5" stocks={dashboard.leaders.gainers} />
-          <MoverList title="🔻 하락 Top 5" stocks={dashboard.leaders.losers} />
-        </div>
+        <StockRankingTable gainers={dashboard.leaders.gainers} losers={dashboard.leaders.losers} />
       </section>
 
       <section>
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-base font-semibold text-toss-gray-900">시장 뉴스</h2>
+          <h2 className="text-base font-semibold text-dark-text-primary">시장 뉴스</h2>
           <div className="flex items-center gap-3">
             <StatusBadge meta={dashboard.news.meta} />
             <Link href="/news" className="text-sm text-toss-blue hover:text-toss-blue-dark transition-colors">
@@ -141,18 +183,18 @@ export default async function DashboardPage() {
               href={item.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="block py-2.5 px-1 -mx-1 rounded-lg hover:bg-toss-gray-50 transition-colors"
+              className="block py-2.5 px-1 -mx-1 rounded-lg hover:bg-dark-elevated transition-colors"
             >
-              <p className="text-sm font-medium text-toss-gray-900 line-clamp-1">
+              <p className="text-sm font-medium text-dark-text-primary line-clamp-1">
                 {item.title}
               </p>
               {item.source && (
-                <p className="text-xs text-toss-gray-400 mt-0.5">{item.source}</p>
+                <p className="text-xs text-dark-text-muted mt-0.5">{item.source}</p>
               )}
             </a>
           ))}
           {dashboard.news.items.length === 0 && (
-            <p className="text-sm text-toss-gray-400 text-center py-4">
+            <p className="text-sm text-dark-text-muted text-center py-4">
               뉴스를 불러올 수 없습니다
             </p>
           )}
@@ -165,7 +207,7 @@ export default async function DashboardPage() {
 function getRegimeColor(regime: "Risk-on" | "Risk-off" | "중립") {
   if (regime === "Risk-on") return "text-toss-red";
   if (regime === "Risk-off") return "text-toss-blue";
-  return "text-toss-gray-700";
+  return "text-dark-text-secondary";
 }
 
 function StatusBadge({ meta }: { meta: DataMeta }) {
@@ -176,7 +218,7 @@ function StatusBadge({ meta }: { meta: DataMeta }) {
       <div className="flex justify-end">
         <Badge variant={variant}>{label}</Badge>
       </div>
-      <p className="text-[11px] text-toss-gray-400 mt-1">
+      <p className="text-[11px] text-dark-text-muted mt-1">
         {meta.source} · {meta.ttlLabel}
         {meta.lastUpdated ? ` · ${formatDate(meta.lastUpdated)}` : ""}
       </p>
@@ -189,9 +231,9 @@ function IndexCard({ index }: { index: MarketIndex }) {
   const sign = index.change > 0 ? "+" : "";
 
   return (
-    <Card>
-      <p className="text-xs font-medium text-toss-gray-500 mb-1">{index.name}</p>
-      <p className="text-2xl font-bold text-toss-gray-900">
+    <Card className="bg-dark-elevated">
+      <p className="text-xs font-medium text-dark-text-secondary mb-1">{index.name}</p>
+      <p className="text-2xl font-bold text-dark-text-primary">
         {index.value.toLocaleString("ko-KR", { minimumFractionDigits: 2 })}
       </p>
       <p className={`text-sm font-semibold mt-1 ${changeColor}`}>
@@ -206,9 +248,9 @@ function MacroCard({ metric }: { metric: MacroMetric }) {
   const sign = metric.changePercent > 0 ? "+" : "";
 
   return (
-    <Card>
-      <p className="text-xs font-medium text-toss-gray-500 mb-1">{metric.name}</p>
-      <p className="text-lg font-bold text-toss-gray-900">
+    <Card className="bg-dark-elevated">
+      <p className="text-xs font-medium text-dark-text-secondary mb-1">{metric.name}</p>
+      <p className="text-lg font-bold text-dark-text-primary">
         {metric.value.toLocaleString("ko-KR", { minimumFractionDigits: 2 })}{metric.unit}
       </p>
       <p className={`text-xs font-medium mt-1 ${changeColor}`}>
@@ -223,17 +265,17 @@ function SectorRow({ sector, rank }: { sector: SectorPerformance; rank: number }
   return (
     <Link
       href={`/sectors/${sector.id}`}
-      className="flex items-center justify-between py-2 px-2 rounded-lg hover:bg-toss-gray-50 transition-colors"
+      className="flex items-center justify-between py-2 px-2 rounded-lg hover:bg-dark-elevated transition-colors"
     >
       <div className="flex items-center gap-2.5 min-w-0">
-        <span className="text-xs font-bold text-toss-gray-300 w-5 text-right">{rank}</span>
-        <p className="text-sm font-semibold text-toss-gray-900 truncate">
+        <span className="text-xs font-bold text-dark-text-muted w-5 text-right">{rank}</span>
+        <p className="text-sm font-semibold text-dark-text-primary truncate">
           {sector.emoji} {sector.name}
         </p>
       </div>
       <div className="text-right">
         <p className={`text-sm font-semibold ${scoreColor}`}>점수 {sector.score.toFixed(2)}</p>
-        <p className="text-xs text-toss-gray-400">
+        <p className="text-xs text-dark-text-muted">
           평균 {formatPercent(sector.avgChangePercent)} · 상승비율 {(sector.advancerRatio * 100).toFixed(0)}%
         </p>
       </div>
@@ -242,50 +284,6 @@ function SectorRow({ sector, rank }: { sector: SectorPerformance; rank: number }
 }
 
 function EmptyInCard({ text }: { text: string }) {
-  return <p className="text-sm text-toss-gray-400 text-center py-3 sm:col-span-3">{text}</p>;
+  return <p className="text-sm text-dark-text-muted text-center py-3 sm:col-span-3">{text}</p>;
 }
 
-function MoverList({ title, stocks }: { title: string; stocks: TrendingStock[] }) {
-  return (
-    <Card>
-      <h3 className="text-sm font-semibold text-toss-gray-900 mb-3">{title}</h3>
-      <div className="space-y-2">
-        {stocks.map((stock, i) => {
-          const changeColor = getChangeColor(stock.changePercent);
-          const bgColor = getChangeBgColor(stock.changePercent);
-
-          return (
-            <Link
-              key={stock.ticker}
-              href={`/stock/${stock.ticker}`}
-              className="flex items-center justify-between py-1.5 px-1 -mx-1 rounded-lg hover:bg-toss-gray-50 transition-colors"
-            >
-              <div className="flex items-center gap-2.5 min-w-0">
-                <span className="text-xs font-bold text-toss-gray-300 w-4 text-right">
-                  {i + 1}
-                </span>
-                <div className="min-w-0">
-                  <p className="text-sm font-medium text-toss-gray-900 truncate">
-                    {stock.name}
-                  </p>
-                  <p className="text-xs text-toss-gray-400">{stock.ticker}</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3 shrink-0 ml-2">
-                <span className="text-sm font-medium text-toss-gray-900">
-                  {formatPrice(stock.price)}원
-                </span>
-                <span className={`text-xs font-semibold px-2 py-0.5 rounded-md ${bgColor}`}>
-                  {stock.changePercent > 0 ? "+" : ""}{stock.changePercent.toFixed(2)}%
-                </span>
-              </div>
-            </Link>
-          );
-        })}
-        {stocks.length === 0 && (
-          <p className="text-sm text-toss-gray-400 text-center py-2">데이터 없음</p>
-        )}
-      </div>
-    </Card>
-  );
-}

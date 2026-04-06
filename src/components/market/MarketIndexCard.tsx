@@ -14,8 +14,8 @@ export function MarketIndexCard({ index }: MarketIndexCardProps) {
 
   return (
     <Card className="flex-1">
-      <p className="text-sm font-medium text-toss-gray-500 mb-1">{index.name}</p>
-      <p className="text-2xl font-bold text-toss-gray-900 mb-2">
+      <p className="text-sm font-medium text-dark-text-secondary mb-1">{index.name}</p>
+      <p className="text-2xl font-bold text-dark-text-primary mb-2">
         {index.value.toLocaleString("ko-KR")}
       </p>
       <span

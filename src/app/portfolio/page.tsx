@@ -10,8 +10,8 @@ export default function PortfolioPage() {
   return (
     <div className="space-y-6">
       <section className="pt-4">
-        <h1 className="text-2xl font-bold text-toss-gray-900">가상 포트폴리오</h1>
-        <p className="text-sm text-toss-gray-500 mt-1">
+        <h1 className="text-2xl font-bold text-dark-text-primary">가상 포트폴리오</h1>
+        <p className="text-sm text-dark-text-secondary mt-1">
           모의 매수로 포트폴리오를 구성하고 수익률을 추적하세요
         </p>
       </section>

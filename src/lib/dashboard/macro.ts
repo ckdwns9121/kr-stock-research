@@ -1,4 +1,5 @@
 import * as cheerio from "cheerio";
+import OpenAI from "openai";
 import { NAVER_FINANCE_URL } from "@/lib/constants";
 import { fetchHTML, fetchWithTimeout } from "@/lib/api/client";
 import { fetchNaverSectorSnapshot } from "@/lib/api/naver-sectors";
@@ -316,6 +317,72 @@ async function fetchSectorPerformance(): Promise<{ items: SectorPerformance[]; s
   };
 }
 
+const KR_AI_CACHE_TTL = 30 * 60 * 1000;
+let krAiCache: { comment: string; timestamp: number } | null = null;
+
+async function generateKRMarketAI({
+  indices,
+  sectors,
+  macro,
+  regime,
+}: {
+  indices: MarketIndex[];
+  sectors: SectorPerformance[];
+  macro: MacroMetric[];
+  regime: "Risk-on" | "Risk-off" | "중립";
+}): Promise<string | undefined> {
+  const apiKey = process.env.OPENAI_API_KEY;
+  if (!apiKey) return undefined;
+
+  const now = Date.now();
+  if (krAiCache && now - krAiCache.timestamp < KR_AI_CACHE_TTL) {
+    return krAiCache.comment;
+  }
+
+  try {
+    const strong = sectors[0];
+    const weak = sectors[sectors.length - 1];
+    const userContent = `[한국 지수]
+${indices.map((i) => `${i.name}: ${i.value.toLocaleString()} (${i.changePercent >= 0 ? "+" : ""}${i.changePercent.toFixed(2)}%)`).join("\n")}
+
+[거시 지표]
+${macro.map((m) => `${m.name}: ${m.value}${m.unit} (${m.changePercent >= 0 ? "+" : ""}${m.changePercent.toFixed(2)}%)`).join("\n")}
+
+[섹터 강약]
+강세: ${strong ? `${strong.emoji} ${strong.name} (${strong.avgChangePercent.toFixed(2)}%)` : "없음"}
+약세: ${weak ? `${weak.emoji} ${weak.name} (${weak.avgChangePercent.toFixed(2)}%)` : "없음"}
+
+[시장 체온]
+${regime}`;
+
+    const client = new OpenAI({ apiKey });
+    const completion = await client.chat.completions.create({
+      model: "gpt-4o",
+      messages: [
+        {
+          role: "system",
+          content:
+            '당신은 한국 주식 시장 분석가입니다. 제공된 데이터를 바탕으로 오늘의 한국 시장을 간결하게 분석하세요. 반드시 JSON으로만 응답: {"comment": "2-3문장 분석"}',
+        },
+        { role: "user", content: userContent },
+      ],
+      temperature: 0.3,
+      max_tokens: 300,
+      response_format: { type: "json_object" },
+    });
+
+    const raw = completion.choices[0]?.message?.content ?? "{}";
+    const parsed = JSON.parse(raw) as { comment?: string };
+    const comment = typeof parsed.comment === "string" ? parsed.comment : undefined;
+    if (comment) {
+      krAiCache = { comment, timestamp: now };
+    }
+    return comment;
+  } catch {
+    return undefined;
+  }
+}
+
 export async function fetchMacroDashboardData(): Promise<MacroDashboardData> {
   const fetchedAt = nowIso();
 
@@ -336,6 +403,8 @@ export async function fetchMacroDashboardData(): Promise<MacroDashboardData> {
   const regimeScore = computeRegimeScore({ indices, strongSector, weakSector, us10y });
   const regime: "Risk-on" | "Risk-off" | "중립" =
     regimeScore >= 2 ? "Risk-on" : regimeScore <= -1 ? "Risk-off" : "중립";
+
+  const aiComment = await generateKRMarketAI({ indices, sectors: sectors.items, macro: macro.items, regime });
 
   const evidenceStatuses: DataStatus[] = [];
   evidenceStatuses.push(indices.length > 0 ? (indicesBase.stale || nasdaq.stale ? "stale" : "fresh") : "unavailable");
@@ -364,6 +433,7 @@ export async function fetchMacroDashboardData(): Promise<MacroDashboardData> {
       strongSector,
       weakSector,
       headline: buildHeadline({ regime, strongSector, weakSector }),
+      aiComment,
     },
     summaryMeta,
     indices: {

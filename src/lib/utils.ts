@@ -7,13 +7,13 @@ export function cn(...inputs: ClassValue[]) {
 export function getChangeColor(value: number): string {
   if (value > 0) return "text-toss-red";
   if (value < 0) return "text-toss-blue";
-  return "text-toss-gray-500";
+  return "text-dark-text-secondary";
 }
 
 export function getChangeBgColor(value: number): string {
-  if (value > 0) return "bg-red-50 text-toss-red";
-  if (value < 0) return "bg-blue-50 text-toss-blue";
-  return "bg-toss-gray-100 text-toss-gray-500";
+  if (value > 0) return "bg-toss-red/15 text-toss-red";
+  if (value < 0) return "bg-toss-blue/15 text-toss-blue";
+  return "bg-dark-elevated text-dark-text-secondary";
 }
 
 export function formatDateParam(date: Date): string {

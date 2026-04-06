@@ -35,6 +35,7 @@ export interface MarketSummary {
   strongSector?: SectorPerformance;
   weakSector?: SectorPerformance;
   headline: string;
+  aiComment?: string;
 }
 
 export interface MacroDashboardData {

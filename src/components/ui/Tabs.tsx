@@ -12,7 +12,7 @@ export function Tabs({ tabs, defaultValue, onChange }: TabsProps) {
   const [active, setActive] = useState(defaultValue ?? tabs[0]?.value);
 
   return (
-    <div className="flex gap-1 bg-toss-gray-100 rounded-xl p-1">
+    <div className="flex gap-1 bg-dark-elevated rounded-xl p-1">
       {tabs.map((tab) => (
         <button
           key={tab.value}
@@ -22,8 +22,8 @@ export function Tabs({ tabs, defaultValue, onChange }: TabsProps) {
           }}
           className={`flex-1 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
             active === tab.value
-              ? "bg-white text-toss-gray-900 shadow-sm"
-              : "text-toss-gray-500 hover:text-toss-gray-700"
+              ? "bg-dark-card text-dark-text-primary shadow-sm"
+              : "text-dark-text-secondary hover:text-dark-text-primary"
           }`}
         >
           {tab.label}

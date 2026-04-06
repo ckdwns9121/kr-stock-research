@@ -27,10 +27,10 @@ export default async function HomePage() {
     <div className="space-y-8">
       {/* Hero section */}
       <section className="text-center pt-8 pb-4">
-        <h1 className="text-3xl font-bold text-toss-gray-900 mb-2">
+        <h1 className="text-3xl font-bold text-dark-text-primary mb-2">
           국내 주식 리서치
         </h1>
-        <p className="text-base text-toss-gray-500 mb-8">
+        <p className="text-base text-dark-text-secondary mb-8">
           뉴스, 시황, 기업분석을 한 곳에서 확인하세요
         </p>
         <div className="max-w-xl mx-auto">
@@ -40,7 +40,7 @@ export default async function HomePage() {
 
       {/* Market overview */}
       <section>
-        <h2 className="text-base font-semibold text-toss-gray-900 mb-3">
+        <h2 className="text-base font-semibold text-dark-text-primary mb-3">
           시장 현황
         </h2>
         <Suspense
@@ -58,7 +58,7 @@ export default async function HomePage() {
       {/* Recent news */}
       <section>
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-base font-semibold text-toss-gray-900">
+          <h2 className="text-base font-semibold text-dark-text-primary">
             최신 뉴스
           </h2>
           <a
@@ -69,14 +69,14 @@ export default async function HomePage() {
           </a>
         </div>
         {recentNews.length > 0 ? (
-          <div className="bg-white rounded-2xl shadow-card p-5">
+          <div className="bg-dark-card rounded-2xl shadow-card p-5">
             {recentNews.map((item, idx) => (
               <NewsItem key={`${item.url}-${idx}`} item={item} />
             ))}
           </div>
         ) : (
-          <div className="bg-white rounded-2xl shadow-card p-5">
-            <p className="text-sm text-toss-gray-500 text-center py-4">
+          <div className="bg-dark-card rounded-2xl shadow-card p-5">
+            <p className="text-sm text-dark-text-secondary text-center py-4">
               뉴스를 불러올 수 없습니다.
             </p>
           </div>

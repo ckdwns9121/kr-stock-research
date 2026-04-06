@@ -37,19 +37,19 @@ export default async function WatchlistPage() {
   return (
     <div className="space-y-8">
       <section className="pt-4">
-        <h1 className="text-2xl font-bold text-toss-gray-900">관심 섹터</h1>
-        <p className="text-sm text-toss-gray-500 mt-1">
+        <h1 className="text-2xl font-bold text-dark-text-primary">관심 섹터</h1>
+        <p className="text-sm text-dark-text-secondary mt-1">
           반도체 · 우주/방산 · 바이오 주요 종목
         </p>
       </section>
 
       {SECTORS.map((sector) => (
         <section key={sector.id}>
-          <h2 className="text-lg font-semibold text-toss-gray-900 mb-3">
+          <h2 className="text-lg font-semibold text-dark-text-primary mb-3">
             {sector.emoji} {sector.name}
           </h2>
           <Card>
-            <div className="divide-y divide-toss-gray-50">
+            <div className="divide-y divide-dark-border">
               {sector.stocks.map((stock) => {
                 const data = priceMap.get(stock.ticker);
                 const changeColor = data ? getChangeColor(data.change) : "";
@@ -59,19 +59,19 @@ export default async function WatchlistPage() {
                   <Link
                     key={stock.ticker}
                     href={`/stock/${stock.ticker}`}
-                    className="flex items-center justify-between py-3 px-1 -mx-1 rounded-xl hover:bg-toss-gray-50 transition-colors"
+                    className="flex items-center justify-between py-3 px-1 -mx-1 rounded-xl hover:bg-dark-elevated transition-colors"
                   >
                     <div className="min-w-0">
-                      <p className="text-sm font-semibold text-toss-gray-900 truncate">
+                      <p className="text-sm font-semibold text-dark-text-primary truncate">
                         {stock.name}
                       </p>
-                      <p className="text-xs text-toss-gray-400 mt-0.5">
+                      <p className="text-xs text-dark-text-muted mt-0.5">
                         {stock.ticker} · {stock.description}
                       </p>
                     </div>
                     {data ? (
                       <div className="text-right ml-4 shrink-0">
-                        <p className="text-sm font-semibold text-toss-gray-900">
+                        <p className="text-sm font-semibold text-dark-text-primary">
                           {formatPrice(data.price)}원
                         </p>
                         <p className={`text-xs font-medium ${changeColor}`}>
@@ -79,7 +79,7 @@ export default async function WatchlistPage() {
                         </p>
                       </div>
                     ) : (
-                      <span className="text-xs text-toss-gray-300 ml-4">-</span>
+                      <span className="text-xs text-dark-text-muted ml-4">-</span>
                     )}
                   </Link>
                 );

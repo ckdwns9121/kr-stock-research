@@ -1,10 +1,12 @@
 import { Suspense } from "react";
+import Link from "next/link";
 import dynamic from "next/dynamic";
 import type { Metadata } from "next";
 import { CompanyHeader } from "@/components/stock/CompanyHeader";
 import { MetricsCard } from "@/components/stock/MetricsCard";
 import { FinancialTable } from "@/components/stock/FinancialTable";
 import { NewsList } from "@/components/stock/NewsList";
+import { AIAnalysisChat } from "@/components/stock/AIAnalysisChat";
 import { CardSkeleton, ChartSkeleton, NewsListSkeleton } from "@/components/ui/Skeleton";
 import { fetchStockSummary } from "@/lib/api/naver";
 import type { StockSummary } from "@/types/stock";
@@ -24,9 +26,6 @@ interface PageProps {
   params: Promise<{ ticker: string }>;
 }
 
-// ---------------------------------------------------------------------------
-// Server-side data helpers — call internal API routes so caching applies
-// ---------------------------------------------------------------------------
 async function getBaseUrl(): Promise<string> {
   return process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
 }
@@ -79,9 +78,6 @@ async function fetchNews(
   }
 }
 
-// ---------------------------------------------------------------------------
-// Metadata
-// ---------------------------------------------------------------------------
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { ticker } = await params;
   const summary = await fetchStockSummary(ticker);
@@ -93,14 +89,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-// ---------------------------------------------------------------------------
-// Page
-// ---------------------------------------------------------------------------
 export default async function StockPage({ params }: PageProps) {
   const { ticker } = await params;
   const baseUrl = await getBaseUrl();
 
-  // Fetch all data in parallel; use allSettled so one failure doesn't block others
   const [summaryResult, metricsResult, financialsResult, newsResult] =
     await Promise.allSettled([
       fetchStockSummary(ticker),
@@ -129,10 +121,17 @@ export default async function StockPage({ params }: PageProps) {
 
   return (
     <div className="space-y-6">
-      {/* Company Header */}
       <CompanyHeader ticker={ticker} summary={summary} />
 
-      {/* Chart + Metrics grid */}
+      <div className="flex justify-end">
+        <Link
+          href={`/analysis?ticker=${ticker}`}
+          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-colors"
+        >
+          분석 작성하기
+        </Link>
+      </div>
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="md:col-span-2">
           <Suspense fallback={<ChartSkeleton />}>
@@ -151,12 +150,10 @@ export default async function StockPage({ params }: PageProps) {
         </div>
       </div>
 
-      {/* Financial statements */}
       <Suspense fallback={<CardSkeleton />}>
         <FinancialTable statements={financialsPayload.data} />
       </Suspense>
 
-      {/* News */}
       <Suspense fallback={<NewsListSkeleton />}>
         <NewsList
           news={newsPayload.data}
@@ -164,6 +161,8 @@ export default async function StockPage({ params }: PageProps) {
           cachedAt={newsPayload.cachedAt}
         />
       </Suspense>
+
+      <AIAnalysisChat ticker={ticker} companyName={summary?.name ?? ticker} />
     </div>
   );
 }

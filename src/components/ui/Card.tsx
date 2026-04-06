@@ -6,7 +6,7 @@ interface CardProps {
 export function Card({ children, className = "" }: CardProps) {
   return (
     <div
-      className={`bg-white rounded-2xl shadow-card p-5 ${className}`}
+      className={`bg-dark-card rounded-2xl p-5 ${className}`}
     >
       {children}
     </div>
@@ -29,7 +29,7 @@ export function CardTitle({
   className?: string;
 }) {
   return (
-    <h3 className={`text-lg font-semibold text-toss-gray-900 ${className}`}>
+    <h3 className={`text-lg font-semibold text-dark-text-primary ${className}`}>
       {children}
     </h3>
   );

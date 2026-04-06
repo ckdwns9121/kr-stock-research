@@ -5,8 +5,8 @@ export default function NotFound() {
   return (
     <div className="py-12">
       <Card className="text-center py-12">
-        <p className="text-4xl font-bold text-toss-gray-300 mb-4">404</p>
-        <p className="text-toss-gray-700 font-medium">
+        <p className="text-4xl font-bold text-dark-text-muted mb-4">404</p>
+        <p className="text-dark-text-primary font-medium">
           페이지를 찾을 수 없습니다
         </p>
         <Link

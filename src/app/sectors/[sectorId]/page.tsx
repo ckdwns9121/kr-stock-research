@@ -49,14 +49,14 @@ export default async function SectorDetailPage({ params }: SectorDetailPageProps
         <section className="pt-4">
           <Link
             href="/sectors"
-            className="inline-flex items-center text-sm text-toss-gray-500 hover:text-toss-gray-900 transition-colors"
+            className="inline-flex items-center text-sm text-dark-text-secondary hover:text-dark-text-primary transition-colors"
           >
             ← 섹터 목록으로
           </Link>
-          <h1 className="text-2xl font-bold text-toss-gray-900 mt-2">
+          <h1 className="text-2xl font-bold text-dark-text-primary mt-2">
             📊 {detail.sectorName}
           </h1>
-          <p className="text-sm text-toss-gray-500 mt-1">
+          <p className="text-sm text-dark-text-secondary mt-1">
             업종 구성 종목 {detail.stocks.length}개
           </p>
         </section>
@@ -65,10 +65,10 @@ export default async function SectorDetailPage({ params }: SectorDetailPageProps
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-toss-gray-100">
-                  <th className="text-left py-3 px-2 text-xs font-semibold text-toss-gray-500">종목</th>
-                  <th className="text-right py-3 px-2 text-xs font-semibold text-toss-gray-500">현재가</th>
-                  <th className="text-right py-3 px-2 text-xs font-semibold text-toss-gray-500">등락률</th>
+                <tr className="border-b border-dark-border">
+                  <th className="text-left py-3 px-2 text-xs font-semibold text-dark-text-secondary">종목</th>
+                  <th className="text-right py-3 px-2 text-xs font-semibold text-dark-text-secondary">현재가</th>
+                  <th className="text-right py-3 px-2 text-xs font-semibold text-dark-text-secondary">등락률</th>
                 </tr>
               </thead>
               <tbody>
@@ -78,15 +78,15 @@ export default async function SectorDetailPage({ params }: SectorDetailPageProps
                   return (
                     <tr
                       key={stock.ticker}
-                      className="border-b border-toss-gray-50 last:border-0 hover:bg-toss-gray-50 transition-colors"
+                      className="border-b border-dark-border last:border-0 hover:bg-dark-elevated transition-colors"
                     >
                       <td className="py-3 px-2">
                         <Link href={`/stock/${stock.ticker}`} className="hover:text-toss-blue transition-colors">
-                          <p className="font-semibold text-toss-gray-900">{stock.name}</p>
-                          <p className="text-xs text-toss-gray-400">{stock.ticker}</p>
+                          <p className="font-semibold text-dark-text-primary">{stock.name}</p>
+                          <p className="text-xs text-dark-text-muted">{stock.ticker}</p>
                         </Link>
                       </td>
-                      <td className="text-right py-3 px-2 font-medium text-toss-gray-900">
+                      <td className="text-right py-3 px-2 font-medium text-dark-text-primary">
                         {typeof stock.price === "number" ? `${formatPrice(stock.price)}원` : "-"}
                       </td>
                       <td className={`text-right py-3 px-2 font-medium ${changeColor}`}>
@@ -124,14 +124,14 @@ export default async function SectorDetailPage({ params }: SectorDetailPageProps
       <section className="pt-4">
         <Link
           href="/sectors"
-          className="inline-flex items-center text-sm text-toss-gray-500 hover:text-toss-gray-900 transition-colors"
+          className="inline-flex items-center text-sm text-dark-text-secondary hover:text-dark-text-primary transition-colors"
         >
           ← 섹터 목록으로
         </Link>
-        <h1 className="text-2xl font-bold text-toss-gray-900 mt-2">
+        <h1 className="text-2xl font-bold text-dark-text-primary mt-2">
           {sector.emoji} {sector.name} 섹터 상세
         </h1>
-        <p className="text-sm text-toss-gray-500 mt-1">
+        <p className="text-sm text-dark-text-secondary mt-1">
           주요 종목 {sector.stocks.length}개를 한눈에 확인하세요
         </p>
       </section>
@@ -140,13 +140,13 @@ export default async function SectorDetailPage({ params }: SectorDetailPageProps
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-toss-gray-100">
-                <th className="text-left py-3 px-2 text-xs font-semibold text-toss-gray-500">종목</th>
-                <th className="text-right py-3 px-2 text-xs font-semibold text-toss-gray-500">현재가</th>
-                <th className="text-right py-3 px-2 text-xs font-semibold text-toss-gray-500">등락률</th>
-                <th className="text-right py-3 px-2 text-xs font-semibold text-toss-gray-500">PER</th>
-                <th className="text-right py-3 px-2 text-xs font-semibold text-toss-gray-500">PBR</th>
-                <th className="text-right py-3 px-2 text-xs font-semibold text-toss-gray-500">ROE</th>
+              <tr className="border-b border-dark-border">
+                <th className="text-left py-3 px-2 text-xs font-semibold text-dark-text-secondary">종목</th>
+                <th className="text-right py-3 px-2 text-xs font-semibold text-dark-text-secondary">현재가</th>
+                <th className="text-right py-3 px-2 text-xs font-semibold text-dark-text-secondary">등락률</th>
+                <th className="text-right py-3 px-2 text-xs font-semibold text-dark-text-secondary">PER</th>
+                <th className="text-right py-3 px-2 text-xs font-semibold text-dark-text-secondary">PBR</th>
+                <th className="text-right py-3 px-2 text-xs font-semibold text-dark-text-secondary">ROE</th>
               </tr>
             </thead>
             <tbody>
@@ -155,29 +155,29 @@ export default async function SectorDetailPage({ params }: SectorDetailPageProps
                 return (
                   <tr
                     key={stock.ticker}
-                    className="border-b border-toss-gray-50 last:border-0 hover:bg-toss-gray-50 transition-colors"
+                    className="border-b border-dark-border last:border-0 hover:bg-dark-elevated transition-colors"
                   >
                     <td className="py-3 px-2">
                       <Link href={`/stock/${stock.ticker}`} className="hover:text-toss-blue transition-colors">
-                        <p className="font-semibold text-toss-gray-900">{stock.name}</p>
-                        <p className="text-xs text-toss-gray-400">
+                        <p className="font-semibold text-dark-text-primary">{stock.name}</p>
+                        <p className="text-xs text-dark-text-muted">
                           {stock.ticker} · {stock.description}
                         </p>
                       </Link>
                     </td>
-                    <td className="text-right py-3 px-2 font-medium text-toss-gray-900">
+                    <td className="text-right py-3 px-2 font-medium text-dark-text-primary">
                       {price ? `${formatPrice(price.currentPrice)}원` : "-"}
                     </td>
                     <td className={`text-right py-3 px-2 font-medium ${changeColor}`}>
                       {price ? formatPercent(price.changePercent) : "-"}
                     </td>
-                    <td className="text-right py-3 px-2 text-toss-gray-700">
+                    <td className="text-right py-3 px-2 text-dark-text-primary">
                       {metrics?.per ? `${formatRatio(metrics.per)}배` : "-"}
                     </td>
-                    <td className="text-right py-3 px-2 text-toss-gray-700">
+                    <td className="text-right py-3 px-2 text-dark-text-primary">
                       {metrics?.pbr ? `${formatRatio(metrics.pbr)}배` : "-"}
                     </td>
-                    <td className="text-right py-3 px-2 text-toss-gray-700">
+                    <td className="text-right py-3 px-2 text-dark-text-primary">
                       {metrics?.roe ? `${formatRatio(metrics.roe)}%` : "-"}
                     </td>
                   </tr>

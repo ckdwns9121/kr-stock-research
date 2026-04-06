@@ -82,7 +82,7 @@ export function MiniChart({ ticker }: MiniChartProps) {
   }, [ticker]);
 
   if (hasError) {
-    return <div className="w-full h-[60px] bg-toss-gray-50 rounded-lg" />;
+    return <div className="w-full h-[60px] bg-dark-elevated rounded-lg" />;
   }
 
   return <div ref={containerRef} className="w-full overflow-hidden" style={{ height: 60 }} />;

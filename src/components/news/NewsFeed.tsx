@@ -42,8 +42,8 @@ export function NewsFeed({ initialItems = [] }: NewsFeedProps) {
 
   if (items.length === 0) {
     return (
-      <div className="bg-white rounded-2xl shadow-card p-5">
-        <p className="text-sm text-toss-gray-500 text-center py-8">
+      <div className="bg-dark-card rounded-2xl shadow-card p-5">
+        <p className="text-sm text-dark-text-secondary text-center py-8">
           뉴스를 불러올 수 없습니다.
         </p>
       </div>
@@ -51,8 +51,8 @@ export function NewsFeed({ initialItems = [] }: NewsFeedProps) {
   }
 
   return (
-    <div className="bg-white rounded-2xl shadow-card p-5">
-      <h2 className="text-base font-semibold text-toss-gray-900 mb-1">
+    <div className="bg-dark-card rounded-2xl shadow-card p-5">
+      <h2 className="text-base font-semibold text-dark-text-primary mb-1">
         시장 뉴스
       </h2>
       <div>

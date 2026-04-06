@@ -37,8 +37,8 @@ export default async function SectorsPage() {
   return (
     <div className="space-y-6">
       <section className="pt-4">
-        <h1 className="text-2xl font-bold text-toss-gray-900">섹터 차트</h1>
-        <p className="text-sm text-toss-gray-500 mt-1">
+        <h1 className="text-2xl font-bold text-dark-text-primary">섹터 차트</h1>
+        <p className="text-sm text-dark-text-secondary mt-1">
           섹터별 주요 종목의 차트와 지표를 확인하세요
         </p>
       </section>

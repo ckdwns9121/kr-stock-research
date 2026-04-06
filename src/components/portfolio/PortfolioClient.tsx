@@ -139,15 +139,15 @@ export function PortfolioClient() {
       {items.length > 0 && (
         <div className="grid grid-cols-3 gap-3">
           <Card>
-            <p className="text-xs text-toss-gray-400 font-medium mb-1">총 투자금액</p>
-            <p className="text-lg font-bold text-toss-gray-900">{formatPrice(totalInvested)}원</p>
+            <p className="text-xs text-dark-text-muted font-medium mb-1">총 투자금액</p>
+            <p className="text-lg font-bold text-dark-text-primary">{formatPrice(totalInvested)}원</p>
           </Card>
           <Card>
-            <p className="text-xs text-toss-gray-400 font-medium mb-1">총 평가금액</p>
-            <p className="text-lg font-bold text-toss-gray-900">{formatPrice(totalCurrent)}원</p>
+            <p className="text-xs text-dark-text-muted font-medium mb-1">총 평가금액</p>
+            <p className="text-lg font-bold text-dark-text-primary">{formatPrice(totalCurrent)}원</p>
           </Card>
           <Card>
-            <p className="text-xs text-toss-gray-400 font-medium mb-1">총 수익률</p>
+            <p className="text-xs text-dark-text-muted font-medium mb-1">총 수익률</p>
             <p className={`text-lg font-bold ${getChangeColor(totalPnl)}`}>
               {totalPnl > 0 ? "+" : ""}{formatPrice(totalPnl)}원
               <span className="text-sm ml-1">({formatPercent(totalPnlPercent)})</span>
@@ -158,7 +158,7 @@ export function PortfolioClient() {
 
       {/* Add form */}
       <Card>
-        <h3 className="text-sm font-semibold text-toss-gray-900 mb-3">종목 추가</h3>
+        <h3 className="text-sm font-semibold text-dark-text-primary mb-3">종목 추가</h3>
         <div className="flex flex-col sm:flex-row gap-2">
           <div className="relative flex-1">
             <input
@@ -166,18 +166,18 @@ export function PortfolioClient() {
               placeholder="종목명 또는 티커"
               value={form.name || form.ticker}
               onChange={(e) => handleSearch(e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-toss-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-toss-blue/30 focus:border-toss-blue"
+              className="w-full px-3 py-2 text-sm border border-dark-border rounded-lg focus:outline-none focus:ring-2 focus:ring-toss-blue/30 focus:border-toss-blue"
             />
             {searchResults.length > 0 && (
-              <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-toss-gray-200 rounded-lg shadow-lg z-20 overflow-hidden">
+              <div className="absolute top-full left-0 right-0 mt-1 bg-dark-card border border-dark-border rounded-lg shadow-lg z-20 overflow-hidden">
                 {searchResults.map((r) => (
                   <button
                     key={r.ticker}
                     onClick={() => selectStock(r.ticker, r.name)}
-                    className="w-full text-left px-3 py-2 text-sm hover:bg-toss-gray-50 transition-colors"
+                    className="w-full text-left px-3 py-2 text-sm hover:bg-dark-elevated transition-colors"
                   >
                     <span className="font-medium">{r.name}</span>
-                    <span className="text-toss-gray-400 ml-2">{r.ticker}</span>
+                    <span className="text-dark-text-muted ml-2">{r.ticker}</span>
                   </button>
                 ))}
               </div>
@@ -188,14 +188,14 @@ export function PortfolioClient() {
             placeholder="매수가 (원)"
             value={form.buyPrice}
             onChange={(e) => setForm((f) => ({ ...f, buyPrice: e.target.value.replace(/[^0-9]/g, "") }))}
-            className="w-full sm:w-32 px-3 py-2 text-sm border border-toss-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-toss-blue/30 focus:border-toss-blue"
+            className="w-full sm:w-32 px-3 py-2 text-sm border border-dark-border rounded-lg focus:outline-none focus:ring-2 focus:ring-toss-blue/30 focus:border-toss-blue"
           />
           <input
             type="text"
             placeholder="수량"
             value={form.quantity}
             onChange={(e) => setForm((f) => ({ ...f, quantity: e.target.value.replace(/[^0-9]/g, "") }))}
-            className="w-full sm:w-24 px-3 py-2 text-sm border border-toss-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-toss-blue/30 focus:border-toss-blue"
+            className="w-full sm:w-24 px-3 py-2 text-sm border border-dark-border rounded-lg focus:outline-none focus:ring-2 focus:ring-toss-blue/30 focus:border-toss-blue"
           />
           <button
             onClick={handleAdd}
@@ -210,7 +210,7 @@ export function PortfolioClient() {
       {/* Portfolio list */}
       {items.length === 0 ? (
         <Card className="text-center py-8">
-          <p className="text-toss-gray-400 text-sm">
+          <p className="text-dark-text-muted text-sm">
             아직 포트폴리오가 비어있습니다. 종목을 추가해보세요.
           </p>
         </Card>
@@ -219,13 +219,13 @@ export function PortfolioClient() {
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="border-b border-toss-gray-100">
-                  <th className="text-left py-3 px-2 text-xs font-semibold text-toss-gray-500">종목</th>
-                  <th className="text-right py-3 px-2 text-xs font-semibold text-toss-gray-500">매수가</th>
-                  <th className="text-right py-3 px-2 text-xs font-semibold text-toss-gray-500">현재가</th>
-                  <th className="text-right py-3 px-2 text-xs font-semibold text-toss-gray-500">수량</th>
-                  <th className="text-right py-3 px-2 text-xs font-semibold text-toss-gray-500">평가금액</th>
-                  <th className="text-right py-3 px-2 text-xs font-semibold text-toss-gray-500">수익률</th>
+                <tr className="border-b border-dark-border">
+                  <th className="text-left py-3 px-2 text-xs font-semibold text-dark-text-secondary">종목</th>
+                  <th className="text-right py-3 px-2 text-xs font-semibold text-dark-text-secondary">매수가</th>
+                  <th className="text-right py-3 px-2 text-xs font-semibold text-dark-text-secondary">현재가</th>
+                  <th className="text-right py-3 px-2 text-xs font-semibold text-dark-text-secondary">수량</th>
+                  <th className="text-right py-3 px-2 text-xs font-semibold text-dark-text-secondary">평가금액</th>
+                  <th className="text-right py-3 px-2 text-xs font-semibold text-dark-text-secondary">수익률</th>
                   <th className="py-3 px-2"></th>
                 </tr>
               </thead>
@@ -237,23 +237,23 @@ export function PortfolioClient() {
                   const pnlBg = getChangeBgColor(pnl);
 
                   return (
-                    <tr key={item.id} className="border-b border-toss-gray-50 last:border-0 hover:bg-toss-gray-50 transition-colors">
+                    <tr key={item.id} className="border-b border-dark-border last:border-0 hover:bg-dark-elevated transition-colors">
                       <td className="py-3 px-2">
                         <Link href={`/stock/${item.ticker}`} className="hover:text-toss-blue transition-colors">
-                          <p className="font-semibold text-toss-gray-900">{item.name}</p>
-                          <p className="text-xs text-toss-gray-400">{item.ticker}</p>
+                          <p className="font-semibold text-dark-text-primary">{item.name}</p>
+                          <p className="text-xs text-dark-text-muted">{item.ticker}</p>
                         </Link>
                       </td>
-                      <td className="text-right py-3 px-2 text-toss-gray-700">
+                      <td className="text-right py-3 px-2 text-dark-text-primary">
                         {formatPrice(item.buyPrice)}원
                       </td>
-                      <td className="text-right py-3 px-2 font-medium text-toss-gray-900">
+                      <td className="text-right py-3 px-2 font-medium text-dark-text-primary">
                         {currentPrice > 0 ? `${formatPrice(currentPrice)}원` : "-"}
                       </td>
-                      <td className="text-right py-3 px-2 text-toss-gray-700">
+                      <td className="text-right py-3 px-2 text-dark-text-primary">
                         {item.quantity.toLocaleString()}주
                       </td>
-                      <td className="text-right py-3 px-2 font-medium text-toss-gray-900">
+                      <td className="text-right py-3 px-2 font-medium text-dark-text-primary">
                         {evalAmount > 0 ? `${formatPrice(evalAmount)}원` : "-"}
                       </td>
                       <td className="text-right py-3 px-2">
@@ -276,7 +276,7 @@ export function PortfolioClient() {
                                 [item.id]: e.target.value.replace(/[^0-9]/g, ""),
                               }))
                             }
-                            className="w-14 px-2 py-1 text-xs border border-toss-gray-200 rounded-md text-right"
+                            className="w-14 px-2 py-1 text-xs border border-dark-border rounded-md text-right"
                           />
                           <button
                             onClick={() => handleSell(item.id, item.quantity)}
@@ -286,7 +286,7 @@ export function PortfolioClient() {
                           </button>
                           <button
                             onClick={() => removeItem(item.id)}
-                            className="text-xs text-toss-gray-400 hover:text-toss-red transition-colors"
+                            className="text-xs text-dark-text-muted hover:text-toss-red transition-colors"
                           >
                             삭제
                           </button>

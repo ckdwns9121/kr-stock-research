@@ -1,11 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import type {
-  IChartApi,
-  ISeriesApi,
-  AreaSeriesPartialOptions,
-} from "lightweight-charts";
 import { Card } from "@/components/ui/Card";
 import { Skeleton } from "@/components/ui/Skeleton";
 import type { ChartDataPoint } from "@/types/stock";
@@ -28,40 +23,23 @@ const PERIODS: Period[] = ["1M", "3M", "6M", "1Y", "3Y"];
 
 export function StockChart({ ticker }: StockChartProps) {
   const containerRef = useRef<HTMLDivElement>(null);
-  const chartRef = useRef<IChartApi | null>(null);
-  const seriesRef = useRef<ISeriesApi<"Area"> | null>(null);
+  const chartInstanceRef = useRef<{ chart: ReturnType<typeof import("lightweight-charts").createChart>; series: unknown } | null>(null);
 
   const [activePeriod, setActivePeriod] = useState<Period>("1Y");
   const [loading, setLoading] = useState(true);
   const [hasError, setHasError] = useState(false);
 
-  const fetchAndRender = useCallback(
+  const fetchData = useCallback(
     async (period: Period) => {
-      if (!chartRef.current || !seriesRef.current) return;
-      setLoading(true);
-
       try {
         const days = PERIOD_DAYS[period];
-        const res = await fetch(
-          `/api/stock/${ticker}/chart?period=${days}`
-        );
-        if (!res.ok) throw new Error("chart fetch failed");
+        const res = await fetch(`/api/stock/${ticker}/chart?period=${days}`);
+        if (!res.ok) return null;
         const json = await res.json();
         const points: ChartDataPoint[] = json.data ?? [];
-
-        if (points.length === 0) throw new Error("empty chart data");
-
-        const seriesData = points.map((p) => ({
-          time: p.date as import("lightweight-charts").Time,
-          value: p.close,
-        }));
-
-        seriesRef.current.setData(seriesData);
-        chartRef.current.timeScale().fitContent();
+        return points.length > 0 ? points : null;
       } catch {
-        setHasError(true);
-      } finally {
-        setLoading(false);
+        return null;
       }
     },
     [ticker]
@@ -69,27 +47,23 @@ export function StockChart({ ticker }: StockChartProps) {
 
   useEffect(() => {
     if (!containerRef.current) return;
-
-    let chart: IChartApi;
+    let disposed = false;
 
     (async () => {
-      const { createChart, ColorType, LineStyle } = await import(
-        "lightweight-charts"
-      );
+      const lc = await import("lightweight-charts");
+      if (disposed || !containerRef.current) return;
 
-      if (!containerRef.current) return;
-
-      chart = createChart(containerRef.current, {
+      const chart = lc.createChart(containerRef.current, {
+        autoSize: true,
         layout: {
-          background: { type: ColorType.Solid, color: "transparent" },
+          background: { type: lc.ColorType.Solid, color: "transparent" },
           textColor: "#8B95A1",
-          fontFamily:
-            "'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
+          fontFamily: "'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
           fontSize: 11,
         },
         grid: {
-          vertLines: { color: "#F2F4F6", style: LineStyle.Solid },
-          horzLines: { color: "#F2F4F6", style: LineStyle.Solid },
+          vertLines: { color: "rgba(255,255,255,0.06)", style: lc.LineStyle.Solid },
+          horzLines: { color: "rgba(255,255,255,0.06)", style: lc.LineStyle.Solid },
         },
         rightPriceScale: {
           borderVisible: false,
@@ -101,51 +75,53 @@ export function StockChart({ ticker }: StockChartProps) {
           fixRightEdge: true,
         },
         crosshair: {
-          vertLine: { color: "#3182F6", width: 1, style: LineStyle.Dashed },
-          horzLine: { color: "#3182F6", width: 1, style: LineStyle.Dashed },
+          vertLine: { color: "#3182F6", width: 1, style: lc.LineStyle.Dashed },
+          horzLine: { color: "#3182F6", width: 1, style: lc.LineStyle.Dashed },
         },
         handleScroll: false,
         handleScale: false,
-        width: containerRef.current.clientWidth,
-        height: 256,
       });
 
-      const areaOptions: AreaSeriesPartialOptions = {
+      const series = chart.addAreaSeries({
         lineColor: "#3182F6",
-        topColor: "rgba(49, 130, 246, 0.12)",
+        topColor: "rgba(49, 130, 246, 0.15)",
         bottomColor: "rgba(49, 130, 246, 0)",
         lineWidth: 2,
         crosshairMarkerVisible: true,
         crosshairMarkerRadius: 4,
         crosshairMarkerBorderColor: "#3182F6",
-        crosshairMarkerBackgroundColor: "#ffffff",
+        crosshairMarkerBackgroundColor: "#1E1E24",
         priceLineVisible: false,
         lastValueVisible: true,
-      };
-
-      const series = chart.addAreaSeries(areaOptions);
-      chartRef.current = chart;
-      seriesRef.current = series;
-
-      const ro = new ResizeObserver((entries) => {
-        if (!chart || !containerRef.current) return;
-        const { width } = entries[0].contentRect;
-        chart.applyOptions({ width });
       });
-      ro.observe(containerRef.current);
 
-      await fetchAndRender(activePeriod);
+      chartInstanceRef.current = { chart, series: series as unknown };
 
-      return () => {
-        ro.disconnect();
-      };
+      // Fetch initial data
+      const points = await fetchData(activePeriod);
+      if (disposed) return;
+
+      if (!points) {
+        setHasError(true);
+        setLoading(false);
+        return;
+      }
+
+      series.setData(
+        points.map((p) => ({
+          time: p.date as string,
+          value: p.close,
+        }))
+      );
+      chart.timeScale().fitContent();
+      setLoading(false);
     })();
 
     return () => {
-      if (chartRef.current) {
-        chartRef.current.remove();
-        chartRef.current = null;
-        seriesRef.current = null;
+      disposed = true;
+      if (chartInstanceRef.current) {
+        chartInstanceRef.current.chart.remove();
+        chartInstanceRef.current = null;
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -153,15 +129,62 @@ export function StockChart({ ticker }: StockChartProps) {
 
   const handlePeriodChange = async (period: Period) => {
     setActivePeriod(period);
-    await fetchAndRender(period);
+    setLoading(true);
+    setHasError(false);
+
+    const points = await fetchData(period);
+    if (!points) {
+      setHasError(true);
+      setLoading(false);
+      return;
+    }
+
+    const inst = chartInstanceRef.current;
+    if (!inst) return;
+
+    const series = inst.series as import("lightweight-charts").ISeriesApi<"Area">;
+    series.setData(
+      points.map((p) => ({
+        time: p.date as string,
+        value: p.close,
+      }))
+    );
+    inst.chart.timeScale().fitContent();
+    setLoading(false);
   };
 
-  if (hasError) return null;
+  if (hasError) {
+    return (
+      <Card>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg font-semibold text-dark-text-primary">주가 차트</h3>
+          <div className="flex gap-1">
+            {PERIODS.map((p) => (
+              <button
+                key={p}
+                onClick={() => handlePeriodChange(p)}
+                className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${
+                  activePeriod === p
+                    ? "bg-toss-blue text-white"
+                    : "text-dark-text-secondary hover:bg-dark-elevated"
+                }`}
+              >
+                {p}
+              </button>
+            ))}
+          </div>
+        </div>
+        <p className="text-sm text-dark-text-muted text-center py-12">
+          차트 데이터를 불러올 수 없습니다
+        </p>
+      </Card>
+    );
+  }
 
   return (
     <Card>
       <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-toss-gray-900">주가 차트</h3>
+        <h3 className="text-lg font-semibold text-dark-text-primary">주가 차트</h3>
         <div className="flex gap-1">
           {PERIODS.map((p) => (
             <button
@@ -170,7 +193,7 @@ export function StockChart({ ticker }: StockChartProps) {
               className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${
                 activePeriod === p
                   ? "bg-toss-blue text-white"
-                  : "text-toss-gray-500 hover:bg-toss-gray-100"
+                  : "text-dark-text-secondary hover:bg-dark-elevated"
               }`}
             >
               {p}
@@ -179,13 +202,13 @@ export function StockChart({ ticker }: StockChartProps) {
         </div>
       </div>
 
-      <div className="relative overflow-hidden" style={{ height: 256 }}>
+      <div className="relative" style={{ height: 280 }}>
         {loading && (
-          <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/80 rounded-xl">
+          <div className="absolute inset-0 z-10 flex items-center justify-center bg-dark-card/80 rounded-xl">
             <Skeleton className="h-full w-full absolute inset-0" />
           </div>
         )}
-        <div ref={containerRef} className="w-full h-full" />
+        <div ref={containerRef} className="w-full" style={{ height: 280 }} />
       </div>
     </Card>
   );

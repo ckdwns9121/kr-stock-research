@@ -26,6 +26,17 @@ const config: Config = {
             900: "#191F28",
           },
         },
+        dark: {
+          bg: "#17171C",
+          card: "#1E1E24",
+          elevated: "#26262C",
+          border: "rgba(255,255,255,0.06)",
+          text: {
+            primary: "#F0F0F5",
+            secondary: "#8B8B95",
+            muted: "#5C5C66",
+          },
+        },
       },
       fontFamily: {
         sans: [

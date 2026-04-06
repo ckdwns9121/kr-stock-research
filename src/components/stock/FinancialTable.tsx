@@ -20,17 +20,17 @@ export function FinancialTable({ statements }: FinancialTableProps) {
         <div className="overflow-x-auto -mx-1">
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-toss-gray-100">
-                <th className="text-left py-2 px-1 text-xs font-medium text-toss-gray-400 whitespace-nowrap">
+              <tr className="border-b border-dark-border">
+                <th className="text-left py-2 px-1 text-xs font-medium text-dark-text-muted whitespace-nowrap">
                   연도/분기
                 </th>
-                <th className="text-right py-2 px-1 text-xs font-medium text-toss-gray-400 whitespace-nowrap">
+                <th className="text-right py-2 px-1 text-xs font-medium text-dark-text-muted whitespace-nowrap">
                   매출액
                 </th>
-                <th className="text-right py-2 px-1 text-xs font-medium text-toss-gray-400 whitespace-nowrap">
+                <th className="text-right py-2 px-1 text-xs font-medium text-dark-text-muted whitespace-nowrap">
                   영업이익
                 </th>
-                <th className="text-right py-2 px-1 text-xs font-medium text-toss-gray-400 whitespace-nowrap">
+                <th className="text-right py-2 px-1 text-xs font-medium text-dark-text-muted whitespace-nowrap">
                   순이익
                 </th>
               </tr>
@@ -39,20 +39,20 @@ export function FinancialTable({ statements }: FinancialTableProps) {
               {statements.map((s, i) => (
                 <tr
                   key={i}
-                  className="border-b border-toss-gray-50 last:border-0 hover:bg-toss-gray-50 transition-colors"
+                  className="border-b border-dark-border last:border-0 hover:bg-dark-elevated transition-colors"
                 >
-                  <td className="py-3 px-1 font-medium text-toss-gray-700 whitespace-nowrap">
+                  <td className="py-3 px-1 font-medium text-dark-text-primary whitespace-nowrap">
                     {s.year}
                     {s.quarter ? ` ${s.quarter}` : ""}
                   </td>
-                  <td className="py-3 px-1 text-right text-toss-gray-900 font-medium tabular-nums">
+                  <td className="py-3 px-1 text-right text-dark-text-primary font-medium tabular-nums">
                     {formatLargeNumber(s.revenue)}
                   </td>
                   <td className="py-3 px-1 text-right font-medium tabular-nums">
                     <span
                       className={
                         s.operatingProfit >= 0
-                          ? "text-toss-gray-900"
+                          ? "text-dark-text-primary"
                           : "text-toss-blue"
                       }
                     >
@@ -62,7 +62,7 @@ export function FinancialTable({ statements }: FinancialTableProps) {
                   <td className="py-3 px-1 text-right font-medium tabular-nums">
                     <span
                       className={
-                        s.netProfit >= 0 ? "text-toss-gray-900" : "text-toss-blue"
+                        s.netProfit >= 0 ? "text-dark-text-primary" : "text-toss-blue"
                       }
                     >
                       {formatLargeNumber(s.netProfit)}

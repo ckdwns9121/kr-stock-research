@@ -28,16 +28,16 @@ export function SearchBar({ placeholder = "종목명 또는 티커 검색" }: Se
   return (
     <div className="relative w-full">
       <div
-        className={`flex items-center gap-3 w-full bg-toss-gray-100 rounded-2xl px-4 py-3 transition-all ${
+        className={`flex items-center gap-3 w-full bg-dark-elevated rounded-2xl px-4 py-3 transition-all ${
           isFocused
-            ? "ring-2 ring-toss-blue bg-white"
-            : "hover:bg-toss-gray-200"
+            ? "ring-2 ring-toss-blue bg-dark-card"
+            : "hover:bg-dark-elevated"
         }`}
       >
         {/* Magnifying glass icon */}
         <svg
           className={`w-5 h-5 shrink-0 transition-colors ${
-            isFocused ? "text-toss-blue" : "text-toss-gray-400"
+            isFocused ? "text-toss-blue" : "text-dark-text-muted"
           }`}
           fill="none"
           viewBox="0 0 24 24"
@@ -68,13 +68,13 @@ export function SearchBar({ placeholder = "종목명 또는 티커 검색" }: Se
             }
           }}
           placeholder={placeholder}
-          className="flex-1 bg-transparent text-sm text-toss-gray-900 placeholder:text-toss-gray-400 outline-none"
+          className="flex-1 bg-transparent text-sm text-dark-text-primary placeholder:text-dark-text-muted outline-none"
           autoComplete="off"
         />
 
         {isLoading && (
           <svg
-            className="w-4 h-4 shrink-0 text-toss-gray-400 animate-spin"
+            className="w-4 h-4 shrink-0 text-dark-text-muted animate-spin"
             fill="none"
             viewBox="0 0 24 24"
           >
@@ -101,7 +101,7 @@ export function SearchBar({ placeholder = "종목명 또는 티커 검색" }: Se
               e.preventDefault();
               setQuery("");
             }}
-            className="shrink-0 text-toss-gray-400 hover:text-toss-gray-600 transition-colors"
+            className="shrink-0 text-dark-text-muted hover:text-dark-text-secondary transition-colors"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />

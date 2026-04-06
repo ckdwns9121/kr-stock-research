@@ -46,14 +46,14 @@ function MetricItem({
   return (
     <div className="flex flex-col gap-1">
       <div className="flex items-center gap-1">
-        <span className="text-xs text-toss-gray-400 font-medium">{label}</span>
+        <span className="text-xs text-dark-text-muted font-medium">{label}</span>
         {explanation && (
           <button
             onClick={() => setShowHelp(!showHelp)}
             className={`w-4 h-4 rounded-full text-[10px] font-bold flex items-center justify-center transition-colors ${
               showHelp
                 ? "bg-toss-blue text-white"
-                : "bg-toss-gray-100 text-toss-gray-400 hover:bg-toss-gray-200"
+                : "bg-dark-elevated text-dark-text-muted hover:bg-dark-elevated"
             }`}
             aria-label={`${label} 설명`}
           >
@@ -61,10 +61,10 @@ function MetricItem({
           </button>
         )}
       </div>
-      <span className="text-base font-bold text-toss-gray-900">{value}</span>
+      <span className="text-base font-bold text-dark-text-primary">{value}</span>
       {showHelp && explanation && (
-        <div className="mt-1 p-2.5 bg-toss-gray-50 rounded-lg">
-          <p className="text-xs text-toss-gray-700 leading-relaxed">
+        <div className="mt-1 p-2.5 bg-dark-elevated rounded-lg">
+          <p className="text-xs text-dark-text-primary leading-relaxed">
             {explanation.desc}
           </p>
           <p className="text-xs text-toss-blue mt-1.5 leading-relaxed">

@@ -29,11 +29,11 @@ export function NewsList({
       </CardHeader>
 
       {news.length === 0 ? (
-        <p className="text-sm text-toss-gray-400 py-4 text-center">
+        <p className="text-sm text-dark-text-muted py-4 text-center">
           뉴스가 없습니다
         </p>
       ) : (
-        <div className="divide-y divide-toss-gray-50">
+        <div className="divide-y divide-dark-border">
           {news.map((item, i) => (
             <NewsCard key={i} item={item} />
           ))}

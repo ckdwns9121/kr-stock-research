@@ -5,10 +5,10 @@ interface BadgeProps {
 }
 
 const variantStyles = {
-  default: "bg-toss-gray-100 text-toss-gray-600",
-  stale: "bg-yellow-50 text-yellow-700",
-  positive: "bg-red-50 text-toss-red",
-  negative: "bg-blue-50 text-toss-blue",
+  default: "bg-dark-elevated text-dark-text-secondary",
+  stale: "bg-yellow-900/30 text-yellow-400",
+  positive: "bg-toss-red/15 text-toss-red",
+  negative: "bg-toss-blue/15 text-toss-blue",
 };
 
 export function Badge({ children, variant = "default", className = "" }: BadgeProps) {

@@ -8,9 +8,9 @@ interface EmptyStateProps {
 export function EmptyState({ title, description }: EmptyStateProps) {
   return (
     <Card className="text-center py-12">
-      <p className="text-toss-gray-700 font-medium">{title}</p>
+      <p className="text-dark-text-primary font-medium">{title}</p>
       {description && (
-        <p className="text-toss-gray-400 text-sm mt-1">{description}</p>
+        <p className="text-dark-text-muted text-sm mt-1">{description}</p>
       )}
     </Card>
   );

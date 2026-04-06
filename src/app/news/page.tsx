@@ -31,8 +31,8 @@ export default async function NewsPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-toss-gray-900 mb-1">뉴스</h1>
-        <p className="text-sm text-toss-gray-500">
+        <h1 className="text-2xl font-bold text-dark-text-primary mb-1">뉴스</h1>
+        <p className="text-sm text-dark-text-secondary">
           국내 주식 시장 최신 뉴스
         </p>
       </div>
@@ -40,7 +40,7 @@ export default async function NewsPage() {
       <Suspense
         fallback={
           <div>
-            <div className="text-sm font-medium text-toss-gray-500 mb-3">
+            <div className="text-sm font-medium text-dark-text-secondary mb-3">
               시장 현황
             </div>
             <div className="flex gap-4">

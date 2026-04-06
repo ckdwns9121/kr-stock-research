@@ -17,7 +17,7 @@ export function ErrorCard({
 }: ErrorCardProps) {
   if (variant === "subtle") {
     return (
-      <div className="text-center py-6 text-toss-gray-400 text-sm">
+      <div className="text-center py-6 text-dark-text-muted text-sm">
         <p>{title}</p>
         {onRetry && (
           <button
@@ -33,13 +33,13 @@ export function ErrorCard({
 
   return (
     <Card className="text-center py-8">
-      <div className="text-toss-gray-400 mb-2">
+      <div className="text-dark-text-muted mb-2">
         <svg className="w-10 h-10 mx-auto" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
         </svg>
       </div>
-      <p className="text-toss-gray-700 font-medium">{title}</p>
-      {message && <p className="text-toss-gray-400 text-sm mt-1">{message}</p>}
+      <p className="text-dark-text-primary font-medium">{title}</p>
+      {message && <p className="text-dark-text-muted text-sm mt-1">{message}</p>}
       {onRetry && (
         <button
           onClick={onRetry}
