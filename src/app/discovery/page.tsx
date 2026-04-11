@@ -5,6 +5,19 @@ import Link from "next/link";
 import { Card, CardHeader, CardTitle } from "@/components/ui/Card";
 import TenbaggerDetail from "@/components/discovery/TenbaggerDetail";
 
+interface FactorDetails {
+  per: number | null;
+  pbr: number | null;
+  peg: number | null;
+  revenueGrowth: number | null;
+  opProfitGrowth: number | null;
+  opMargin: number | null;
+  debtRatio: number | null;
+  roe: number | null;
+  marketCapEok: number | null;
+  dip52w: number | null;
+}
+
 interface DiscoveryStock {
   ticker: string;
   name: string;
@@ -24,6 +37,7 @@ interface DiscoveryStock {
     size: number;
     momentum: number;
   };
+  factorDetails?: FactorDetails;
 }
 
 function formatPrice(price: number): string {
@@ -64,18 +78,37 @@ const FACTOR_LABELS: { key: keyof DiscoveryStock["factors"]; label: string }[] =
   { key: "momentum", label: "모멘텀" },
 ];
 
-function FactorMiniBars({ factors }: { factors: DiscoveryStock["factors"] }) {
+const FACTOR_MAX: Record<string, number> = {
+  valuation: 25, growth: 25, quality: 20, size: 15, momentum: 15,
+};
+
+function getFactorTooltip(key: string, details?: FactorDetails): string {
+  if (!details) return "";
+  const fmt = (v: number | null, suffix = "%") => v != null ? `${v.toFixed(1)}${suffix}` : "-";
+  switch (key) {
+    case "valuation": return `PER ${fmt(details.per, "배")} · PBR ${fmt(details.pbr, "배")}${details.peg != null ? ` · PEG ${details.peg.toFixed(2)}` : ""}`;
+    case "growth": return `매출성장 ${fmt(details.revenueGrowth)} · 영업이익성장 ${fmt(details.opProfitGrowth)}`;
+    case "quality": return `영업이익률 ${fmt(details.opMargin)} · 부채비율 ${fmt(details.debtRatio)} · ROE ${fmt(details.roe)}`;
+    case "size": return `시총 ${details.marketCapEok != null ? `${Math.round(details.marketCapEok).toLocaleString()}억원` : "-"}`;
+    case "momentum": return `52주고점 대비 ${details.dip52w != null ? `-${details.dip52w.toFixed(1)}%` : "-"}`;
+    default: return "";
+  }
+}
+
+function FactorMiniBars({ factors, details }: { factors: DiscoveryStock["factors"]; details?: FactorDetails }) {
   return (
     <div className="flex flex-col gap-0.5 min-w-[80px]">
       {FACTOR_LABELS.map(({ key, label }) => {
         const val = factors[key];
-        const pct = Math.min(100, Math.max(0, val));
+        const max = FACTOR_MAX[key] ?? 20;
+        const pct = Math.min(100, (val / max) * 100);
+        const tooltip = getFactorTooltip(key, details);
         return (
-          <div key={key} className="flex items-center gap-1.5">
+          <div key={key} className="flex items-center gap-1.5 group relative" title={tooltip}>
             <span className="text-[10px] text-dark-text-muted w-10 shrink-0">{label}</span>
             <div className="flex-1 h-1 bg-dark-elevated rounded-full overflow-hidden">
               <div
-                className="h-full rounded-full bg-dark-text-muted opacity-70"
+                className={`h-full rounded-full ${pct >= 70 ? "bg-toss-red/70" : pct >= 40 ? "bg-yellow-500/70" : "bg-toss-blue/70"}`}
                 style={{ width: `${pct}%` }}
               />
             </div>
@@ -328,7 +361,7 @@ export default function DiscoveryPage() {
 
                         {/* 팩터 미니바 */}
                         <td className="px-4 py-3">
-                          <FactorMiniBars factors={stock.factors} />
+                          <FactorMiniBars factors={stock.factors} details={stock.factorDetails} />
                         </td>
 
                         {/* AI 분석 버튼 */}
