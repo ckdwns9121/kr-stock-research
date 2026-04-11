@@ -10,6 +10,7 @@
     "update-corp-codes": "python3 scripts/update-corp-codes.py"
   },
   "dependencies": {
+    "@xyflow/react": "^12.10.2",
     "cheerio": "^1.0.0",
     "clsx": "^2.1.1",
     "lightweight-charts": "^4.1.0",
