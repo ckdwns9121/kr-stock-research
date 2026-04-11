@@ -11,7 +11,7 @@ import { PeerComparison } from "@/components/stock/PeerComparison";
 import { ConsensusBar } from "@/components/stock/ConsensusBar";
 import { CardSkeleton, ChartSkeleton, NewsListSkeleton } from "@/components/ui/Skeleton";
 import { fetchStockSummary } from "@/lib/api/naver";
-import { SECTORS } from "@/lib/sectors";
+import { findPeersByIndustry } from "@/lib/api/dart-industry";
 import type { StockSummary } from "@/types/stock";
 import type { FinancialMetrics, FinancialStatement } from "@/types/financial";
 import type { NewsItem } from "@/types/news";
@@ -105,24 +105,25 @@ async function fetchPeerData(
   ticker: string,
   baseUrl: string
 ): Promise<{ sectorName: string; peers: PeerData[] } | null> {
-  const sector = SECTORS.find((s) => s.stocks.some((st) => st.ticker === ticker));
-  if (!sector) return null;
+  const peerInfos = await findPeersByIndustry(ticker);
+  if (peerInfos.length === 0) return null;
 
-  const peerStocks = sector.stocks.filter((st) => st.ticker !== ticker);
+  const sectorName = peerInfos[0].sectorName;
 
+  // Fetch price data for peers (limit to 8 for speed)
+  const limited = peerInfos.slice(0, 8);
   const results = await Promise.allSettled(
-    peerStocks.map(async (st) => {
+    limited.map(async (peer) => {
       const [summary, metricsPayload] = await Promise.allSettled([
-        fetchStockSummary(st.ticker),
-        fetchMetrics(st.ticker, baseUrl),
+        fetchStockSummary(peer.ticker),
+        fetchMetrics(peer.ticker, baseUrl),
       ]);
       const s = summary.status === "fulfilled" ? summary.value : null;
-      const m =
-        metricsPayload.status === "fulfilled" ? metricsPayload.value.data : null;
+      const m = metricsPayload.status === "fulfilled" ? metricsPayload.value.data : null;
       if (!s) return null;
       return {
-        ticker: st.ticker,
-        name: st.name,
+        ticker: peer.ticker,
+        name: peer.name,
         price: s.currentPrice,
         changePercent: s.changePercent,
         per: m?.per ?? undefined,
@@ -131,7 +132,7 @@ async function fetchPeerData(
     })
   );
 
-  // Include the current ticker at the front
+  // Include current ticker at front
   const currentSummary = await fetchStockSummary(ticker);
   const currentMetrics = await fetchMetrics(ticker, baseUrl);
   const currentEntry: PeerData | null = currentSummary
@@ -145,12 +146,11 @@ async function fetchPeerData(
       }
     : null;
 
-  const peerList: PeerData[] = results
+  const peerList = results
     .flatMap((r) => (r.status === "fulfilled" && r.value !== null ? [r.value] : []));
 
   const allPeers = currentEntry ? [currentEntry, ...peerList] : peerList;
-
-  return { sectorName: `${sector.emoji} ${sector.name}`, peers: allPeers };
+  return { sectorName, peers: allPeers };
 }
 
 export default async function StockPage({ params }: PageProps) {

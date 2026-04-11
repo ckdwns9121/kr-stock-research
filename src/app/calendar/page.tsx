@@ -6,96 +6,59 @@ export const metadata: Metadata = {
   description: "FOMC, CPI, 한은 금통위 등 주요 경제 이벤트 일정을 확인하세요.",
 };
 
-interface EconomicEvent {
+export interface EconomicEvent {
   name: string;
   country: "KR" | "US";
-  frequency: string;
+  date: string; // YYYY-MM-DD
+  time?: string; // HH:MM (현지 시간)
   importance: "high" | "medium";
   description: string;
   icon: string;
+  previous?: string; // 이전 발표치
+  forecast?: string; // 예상치
 }
 
 const ECONOMIC_EVENTS: EconomicEvent[] = [
-  {
-    name: "FOMC 금리 결정",
-    country: "US",
-    frequency: "6주마다",
-    importance: "high",
-    description: "미 연방공개시장위원회의 기준금리 결정. 글로벌 자금 흐름과 달러 강세에 직접 영향을 미치는 최중요 이벤트.",
-    icon: "🇺🇸",
-  },
-  {
-    name: "CPI 소비자물가지수",
-    country: "US",
-    frequency: "월간",
-    importance: "high",
-    description: "미국 소비자물가 변동률. FOMC 금리 결정의 핵심 근거로 사용되며 인플레이션 추세를 파악할 수 있는 지표.",
-    icon: "🇺🇸",
-  },
-  {
-    name: "비농업 고용지표 (NFP)",
-    country: "US",
-    frequency: "월간",
-    importance: "high",
-    description: "미국 비농업 부문 신규 고용자 수. 경기 강도와 소비 여력을 나타내며 연준 통화정책 판단의 핵심 변수.",
-    icon: "🇺🇸",
-  },
-  {
-    name: "PPI 생산자물가지수",
-    country: "US",
-    frequency: "월간",
-    importance: "medium",
-    description: "공장·농장 출하 단계의 물가 변동. CPI보다 선행하는 경향이 있어 인플레이션 방향성을 미리 가늠할 수 있는 지표.",
-    icon: "🇺🇸",
-  },
-  {
-    name: "GDP 성장률",
-    country: "US",
-    frequency: "분기",
-    importance: "high",
-    description: "미국의 분기별 경제성장률(속보·잠정·확정치 3차 발표). 경기 사이클 판단의 기준이 되는 최상위 거시 지표.",
-    icon: "🇺🇸",
-  },
-  {
-    name: "PCE 물가지수",
-    country: "US",
-    frequency: "월간",
-    importance: "high",
-    description: "연준이 가장 중시하는 인플레이션 지표. CPI보다 소비 패턴 변화를 폭넓게 반영해 통화정책 기준으로 활용.",
-    icon: "🇺🇸",
-  },
-  {
-    name: "한은 금통위",
-    country: "KR",
-    frequency: "연 8회",
-    importance: "high",
-    description: "한국은행 금융통화위원회의 기준금리 결정. 국내 대출금리·채권·부동산 시장에 직접 영향을 미치는 핵심 이벤트.",
-    icon: "🇰🇷",
-  },
-  {
-    name: "수출입 동향",
-    country: "KR",
-    frequency: "월간",
-    importance: "medium",
-    description: "한국의 월별 수출입 금액 및 증감률. 반도체·자동차 등 주력 품목의 경기 방향을 선행적으로 확인할 수 있는 지표.",
-    icon: "🇰🇷",
-  },
-  {
-    name: "CPI 소비자물가지수",
-    country: "KR",
-    frequency: "월간",
-    importance: "medium",
-    description: "국내 소비자물가 변동률. 한은 금통위 금리 결정의 주요 근거로 국내 인플레이션 수준을 나타내는 지표.",
-    icon: "🇰🇷",
-  },
-  {
-    name: "GDP 성장률",
-    country: "KR",
-    frequency: "분기",
-    importance: "high",
-    description: "한국의 분기별 경제성장률. 내수·수출 경기를 종합적으로 반영하며 국내 경기 사이클 판단의 기준이 되는 지표.",
-    icon: "🇰🇷",
-  },
+  // 2026년 미국 주요 일정
+  { name: "FOMC 금리 결정", country: "US", date: "2026-01-28", time: "14:00", importance: "high", icon: "🇺🇸", description: "미 연방공개시장위원회 기준금리 결정", previous: "4.50%", forecast: "4.25%" },
+  { name: "비농업 고용지표 (NFP)", country: "US", date: "2026-02-06", time: "08:30", importance: "high", icon: "🇺🇸", description: "미국 1월 비농업 부문 신규 고용자 수", previous: "256K", forecast: "170K" },
+  { name: "CPI 소비자물가", country: "US", date: "2026-02-12", time: "08:30", importance: "high", icon: "🇺🇸", description: "미국 1월 소비자물가 변동률 (YoY)", previous: "2.9%", forecast: "2.8%" },
+  { name: "PPI 생산자물가", country: "US", date: "2026-02-13", time: "08:30", importance: "medium", icon: "🇺🇸", description: "미국 1월 생산자물가 변동률", previous: "3.3%" },
+  { name: "PCE 물가지수", country: "US", date: "2026-02-28", time: "08:30", importance: "high", icon: "🇺🇸", description: "연준 선호 인플레 지표 (1월)", previous: "2.6%" },
+  { name: "비농업 고용지표 (NFP)", country: "US", date: "2026-03-06", time: "08:30", importance: "high", icon: "🇺🇸", description: "미국 2월 비농업 부문 신규 고용자 수" },
+  { name: "CPI 소비자물가", country: "US", date: "2026-03-11", time: "08:30", importance: "high", icon: "🇺🇸", description: "미국 2월 소비자물가 변동률 (YoY)" },
+  { name: "FOMC 금리 결정", country: "US", date: "2026-03-18", time: "14:00", importance: "high", icon: "🇺🇸", description: "미 연방공개시장위원회 기준금리 결정 + 점도표" },
+  { name: "PCE 물가지수", country: "US", date: "2026-03-27", time: "08:30", importance: "high", icon: "🇺🇸", description: "연준 선호 인플레 지표 (2월)" },
+  { name: "비농업 고용지표 (NFP)", country: "US", date: "2026-04-03", time: "08:30", importance: "high", icon: "🇺🇸", description: "미국 3월 비농업 부문 신규 고용자 수" },
+  { name: "CPI 소비자물가", country: "US", date: "2026-04-14", time: "08:30", importance: "high", icon: "🇺🇸", description: "미국 3월 소비자물가 변동률 (YoY)" },
+  { name: "PCE 물가지수", country: "US", date: "2026-04-30", time: "08:30", importance: "high", icon: "🇺🇸", description: "연준 선호 인플레 지표 (3월)" },
+  { name: "FOMC 금리 결정", country: "US", date: "2026-05-06", time: "14:00", importance: "high", icon: "🇺🇸", description: "미 연방공개시장위원회 기준금리 결정" },
+  { name: "CPI 소비자물가", country: "US", date: "2026-05-12", time: "08:30", importance: "high", icon: "🇺🇸", description: "미국 4월 소비자물가 변동률 (YoY)" },
+  { name: "비농업 고용지표 (NFP)", country: "US", date: "2026-05-08", time: "08:30", importance: "high", icon: "🇺🇸", description: "미국 4월 비농업 부문 신규 고용자 수" },
+  { name: "FOMC 금리 결정", country: "US", date: "2026-06-17", time: "14:00", importance: "high", icon: "🇺🇸", description: "미 연방공개시장위원회 기준금리 결정 + 점도표" },
+  { name: "CPI 소비자물가", country: "US", date: "2026-06-10", time: "08:30", importance: "high", icon: "🇺🇸", description: "미국 5월 소비자물가 변동률 (YoY)" },
+  { name: "FOMC 금리 결정", country: "US", date: "2026-07-29", time: "14:00", importance: "high", icon: "🇺🇸", description: "미 연방공개시장위원회 기준금리 결정" },
+  { name: "GDP 성장률 (속보)", country: "US", date: "2026-04-29", time: "08:30", importance: "high", icon: "🇺🇸", description: "미국 2026년 1분기 GDP 성장률 속보치" },
+  { name: "GDP 성장률 (속보)", country: "US", date: "2026-07-29", time: "08:30", importance: "high", icon: "🇺🇸", description: "미국 2026년 2분기 GDP 성장률 속보치" },
+
+  // 2026년 한국 주요 일정
+  { name: "한은 금통위", country: "KR", date: "2026-01-16", time: "10:00", importance: "high", icon: "🇰🇷", description: "한국은행 금융통화위원회 기준금리 결정", previous: "3.00%", forecast: "2.75%" },
+  { name: "수출입 동향", country: "KR", date: "2026-02-01", importance: "medium", icon: "🇰🇷", description: "2026년 1월 수출입 실적" },
+  { name: "한은 금통위", country: "KR", date: "2026-02-27", time: "10:00", importance: "high", icon: "🇰🇷", description: "한국은행 금융통화위원회 기준금리 결정" },
+  { name: "수출입 동향", country: "KR", date: "2026-03-01", importance: "medium", icon: "🇰🇷", description: "2026년 2월 수출입 실적" },
+  { name: "CPI 소비자물가", country: "KR", date: "2026-03-03", importance: "medium", icon: "🇰🇷", description: "한국 2월 소비자물가 변동률" },
+  { name: "한은 금통위", country: "KR", date: "2026-04-09", time: "10:00", importance: "high", icon: "🇰🇷", description: "한국은행 금융통화위원회 기준금리 결정" },
+  { name: "수출입 동향", country: "KR", date: "2026-04-01", importance: "medium", icon: "🇰🇷", description: "2026년 3월 수출입 실적" },
+  { name: "CPI 소비자물가", country: "KR", date: "2026-04-02", importance: "medium", icon: "🇰🇷", description: "한국 3월 소비자물가 변동률" },
+  { name: "GDP 성장률", country: "KR", date: "2026-04-23", importance: "high", icon: "🇰🇷", description: "한국 2026년 1분기 GDP 성장률 속보치" },
+  { name: "수출입 동향", country: "KR", date: "2026-05-01", importance: "medium", icon: "🇰🇷", description: "2026년 4월 수출입 실적" },
+  { name: "한은 금통위", country: "KR", date: "2026-05-28", time: "10:00", importance: "high", icon: "🇰🇷", description: "한국은행 금융통화위원회 기준금리 결정" },
+  { name: "수출입 동향", country: "KR", date: "2026-06-01", importance: "medium", icon: "🇰🇷", description: "2026년 5월 수출입 실적" },
+  { name: "한은 금통위", country: "KR", date: "2026-07-09", time: "10:00", importance: "high", icon: "🇰🇷", description: "한국은행 금융통화위원회 기준금리 결정" },
+  { name: "GDP 성장률", country: "KR", date: "2026-07-23", importance: "high", icon: "🇰🇷", description: "한국 2026년 2분기 GDP 성장률 속보치" },
+  { name: "한은 금통위", country: "KR", date: "2026-08-27", time: "10:00", importance: "high", icon: "🇰🇷", description: "한국은행 금융통화위원회 기준금리 결정" },
+  { name: "한은 금통위", country: "KR", date: "2026-10-15", time: "10:00", importance: "high", icon: "🇰🇷", description: "한국은행 금융통화위원회 기준금리 결정" },
+  { name: "한은 금통위", country: "KR", date: "2026-11-26", time: "10:00", importance: "high", icon: "🇰🇷", description: "한국은행 금융통화위원회 기준금리 결정" },
 ];
 
 export default function CalendarPage() {
@@ -103,7 +66,7 @@ export default function CalendarPage() {
     <div className="space-y-6">
       <section>
         <h1 className="text-2xl font-bold text-dark-text-primary">경제 캘린더</h1>
-        <p className="text-sm text-dark-text-secondary mt-1">주요 경제 이벤트 일정</p>
+        <p className="text-sm text-dark-text-secondary mt-1">주요 한국·미국 경제 이벤트 일정과 D-day를 확인하세요</p>
       </section>
 
       <CalendarTabs events={ECONOMIC_EVENTS} />

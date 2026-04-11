@@ -68,15 +68,33 @@ export default function ScreenerPage() {
   const [sortKey, setSortKey] = useState<SortKey>("marketCap");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
 
+  // 초기 로드
   useEffect(() => {
     fetch("/api/screener")
       .then((r) => r.json())
-      .then((data) => {
-        setStocks(data.stocks ?? []);
-      })
+      .then((data) => setStocks(data.stocks ?? []))
       .catch(() => setStocks([]))
       .finally(() => setLoading(false));
   }, []);
+
+  // 검색어 변경 시 서버 검색 (디바운스)
+  useEffect(() => {
+    const q = searchQuery.trim();
+    if (q.length < 2) return; // 2글자 이상만 서버 검색
+    setLoading(true);
+    const timer = setTimeout(() => {
+      fetch(`/api/screener?q=${encodeURIComponent(q)}`)
+        .then((r) => r.json())
+        .then((data) => setStocks((prev) => {
+          const existing = new Set(prev.map((s) => s.ticker));
+          const newStocks = (data.stocks ?? []).filter((s: ScreenerStock) => !existing.has(s.ticker));
+          return [...prev, ...newStocks];
+        }))
+        .catch(() => {})
+        .finally(() => setLoading(false));
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   function handleSort(key: SortKey) {
     if (sortKey === key) {
