@@ -33,10 +33,31 @@ export function Header() {
             포트폴리오
           </Link>
           <Link
+            href="/discovery"
+            className="text-sm font-medium text-dark-text-secondary hover:text-dark-text-primary transition-colors"
+          >
+            발굴
+          </Link>
+          <Link
+            href="/screener"
+            className="text-sm font-medium text-dark-text-secondary hover:text-dark-text-primary transition-colors"
+          >
+            스크리너
+          </Link>
+          <Link
             href="/news"
             className="text-sm font-medium text-dark-text-secondary hover:text-dark-text-primary transition-colors"
           >
             뉴스
+          </Link>
+          <Link href="/calendar" className="text-sm font-medium text-dark-text-secondary hover:text-dark-text-primary transition-colors">
+            캘린더
+          </Link>
+          <Link
+            href="/briefing"
+            className="text-sm font-medium text-dark-text-secondary hover:text-dark-text-primary transition-colors"
+          >
+            브리핑
           </Link>
         </nav>
       </div>

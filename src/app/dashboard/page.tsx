@@ -12,6 +12,7 @@ import type { GlobalMarketData } from "@/types/global-market";
 import { StockRankingTable } from "@/components/dashboard/StockRankingTable";
 import { MarketTickerBar } from "@/components/dashboard/MarketTickerBar";
 import type { TickerItem } from "@/components/dashboard/MarketTickerBar";
+import { SectorHeatmap } from "@/components/dashboard/SectorHeatmap";
 
 export const metadata: Metadata = {
   title: "매크로 시황 대시보드 - 주식리서치",
@@ -108,6 +109,15 @@ export default async function DashboardPage() {
             </Card>
           </div>
         </Card>
+      </section>
+
+      {/* 섹터 히트맵 */}
+      <section className="space-y-3">
+        <div className="flex items-center justify-between">
+          <h2 className="text-base font-semibold text-dark-text-primary">섹터 히트맵</h2>
+          <StatusBadge meta={dashboard.sectors.meta} />
+        </div>
+        <SectorHeatmap sectors={dashboard.sectors.items} />
       </section>
 
       {/* 해석 근거 */}

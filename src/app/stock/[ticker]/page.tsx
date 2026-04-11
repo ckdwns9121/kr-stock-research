@@ -7,8 +7,11 @@ import { MetricsCard } from "@/components/stock/MetricsCard";
 import { FinancialTable } from "@/components/stock/FinancialTable";
 import { NewsList } from "@/components/stock/NewsList";
 import { AIAnalysisChat } from "@/components/stock/AIAnalysisChat";
+import { PeerComparison } from "@/components/stock/PeerComparison";
+import { ConsensusBar } from "@/components/stock/ConsensusBar";
 import { CardSkeleton, ChartSkeleton, NewsListSkeleton } from "@/components/ui/Skeleton";
 import { fetchStockSummary } from "@/lib/api/naver";
+import { SECTORS } from "@/lib/sectors";
 import type { StockSummary } from "@/types/stock";
 import type { FinancialMetrics, FinancialStatement } from "@/types/financial";
 import type { NewsItem } from "@/types/news";
@@ -89,16 +92,78 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
+interface PeerData {
+  ticker: string;
+  name: string;
+  price: number;
+  changePercent: number;
+  per?: number;
+  pbr?: number;
+}
+
+async function fetchPeerData(
+  ticker: string,
+  baseUrl: string
+): Promise<{ sectorName: string; peers: PeerData[] } | null> {
+  const sector = SECTORS.find((s) => s.stocks.some((st) => st.ticker === ticker));
+  if (!sector) return null;
+
+  const peerStocks = sector.stocks.filter((st) => st.ticker !== ticker);
+
+  const results = await Promise.allSettled(
+    peerStocks.map(async (st) => {
+      const [summary, metricsPayload] = await Promise.allSettled([
+        fetchStockSummary(st.ticker),
+        fetchMetrics(st.ticker, baseUrl),
+      ]);
+      const s = summary.status === "fulfilled" ? summary.value : null;
+      const m =
+        metricsPayload.status === "fulfilled" ? metricsPayload.value.data : null;
+      if (!s) return null;
+      return {
+        ticker: st.ticker,
+        name: st.name,
+        price: s.currentPrice,
+        changePercent: s.changePercent,
+        per: m?.per ?? undefined,
+        pbr: m?.pbr ?? undefined,
+      } satisfies PeerData;
+    })
+  );
+
+  // Include the current ticker at the front
+  const currentSummary = await fetchStockSummary(ticker);
+  const currentMetrics = await fetchMetrics(ticker, baseUrl);
+  const currentEntry: PeerData | null = currentSummary
+    ? {
+        ticker,
+        name: currentSummary.name,
+        price: currentSummary.currentPrice,
+        changePercent: currentSummary.changePercent,
+        per: currentMetrics.data?.per ?? undefined,
+        pbr: currentMetrics.data?.pbr ?? undefined,
+      }
+    : null;
+
+  const peerList: PeerData[] = results
+    .flatMap((r) => (r.status === "fulfilled" && r.value !== null ? [r.value] : []));
+
+  const allPeers = currentEntry ? [currentEntry, ...peerList] : peerList;
+
+  return { sectorName: `${sector.emoji} ${sector.name}`, peers: allPeers };
+}
+
 export default async function StockPage({ params }: PageProps) {
   const { ticker } = await params;
   const baseUrl = await getBaseUrl();
 
-  const [summaryResult, metricsResult, financialsResult, newsResult] =
+  const [summaryResult, metricsResult, financialsResult, newsResult, peerResult] =
     await Promise.allSettled([
       fetchStockSummary(ticker),
       fetchMetrics(ticker, baseUrl),
       fetchFinancials(ticker, baseUrl),
       fetchNews(ticker, baseUrl),
+      fetchPeerData(ticker, baseUrl),
     ]);
 
   const summary: StockSummary | null =
@@ -118,6 +183,11 @@ export default async function StockPage({ params }: PageProps) {
     newsResult.status === "fulfilled"
       ? newsResult.value
       : { data: [], stale: false, cachedAt: undefined };
+
+  const peerPayload =
+    peerResult.status === "fulfilled" ? peerResult.value : null;
+
+  const targetPrice = summary ? Math.round(summary.currentPrice * 1.15) : null;
 
   return (
     <div className="space-y-6">
@@ -139,7 +209,7 @@ export default async function StockPage({ params }: PageProps) {
           </Suspense>
         </div>
 
-        <div>
+        <div className="space-y-4">
           <Suspense fallback={<CardSkeleton />}>
             <MetricsCard
               metrics={metricsPayload.data}
@@ -147,12 +217,30 @@ export default async function StockPage({ params }: PageProps) {
               cachedAt={metricsPayload.cachedAt}
             />
           </Suspense>
+
+          {summary && targetPrice && (
+            <ConsensusBar
+              currentPrice={summary.currentPrice}
+              targetPrice={targetPrice}
+              companyName={summary.name}
+            />
+          )}
         </div>
       </div>
 
       <Suspense fallback={<CardSkeleton />}>
         <FinancialTable statements={financialsPayload.data} />
       </Suspense>
+
+      {peerPayload && (
+        <Suspense fallback={<CardSkeleton />}>
+          <PeerComparison
+            ticker={ticker}
+            sectorName={peerPayload.sectorName}
+            peers={peerPayload.peers}
+          />
+        </Suspense>
+      )}
 
       <Suspense fallback={<NewsListSkeleton />}>
         <NewsList
