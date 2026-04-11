@@ -28,39 +28,39 @@ interface MindMapResponse {
 const CACHE_TTL = 60 * 60 * 1000; // 1시간
 const cache = new Map<string, { data: MindMapResponse; timestamp: number }>();
 
-const SYSTEM_PROMPT = `당신은 한국 주식 시장의 밸류체인/공급망 분석 전문가입니다. 사용자가 제시한 테마를 기반으로 실제 돈과 제품의 흐름(Upstream → Core → Downstream)을 따라 밸류체인을 구성하세요.
+const SYSTEM_PROMPT = `당신은 한국 주식 시장의 밸류체인 탐색 전문가입니다. 사용자가 제시한 테마를 기반으로 "왜?"라는 질문을 꼬리에 꼬리를 물며 따라가면서 관련 산업과 종목을 연쇄적으로 발굴하세요.
 
-중요: "관련 테마 묶음"이 아니라 실제 공급망/수요망 흐름도입니다.
-- Upstream (공급): 원재료, 부품, 장비, 인프라를 제공하는 산업/기업
-- Core (핵심): 이 테마의 핵심 제품/서비스를 만드는 산업/기업
-- Downstream (수요): 핵심 제품을 구매/활용하는 산업/기업 (고객사)
+탐색 방식 (예시: AI 테마):
+- AI가 뜨면 → 연산이 필요하겠네? → 반도체 → 삼성전자, SK하이닉스
+- 반도체 말고 또? → 데이터 저장도 필요 → 메모리/NAND → 관련 기업은?
+- 연산하면 열 나겠네? → 냉각/방열 → 이 분야 기업은?
+- 데이터 많으면? → 데이터센터 → 누가 운영? → 누가 건설?
+- 데이터센터는 전기 많이 쓰겠네? → 전력/에너지 → 발전사? 변압기?
+- 그리고 이 기업들의 부품은 어디서? → 하청/납품 업체는?
+
+이렇게 "왜 필요한지"를 따라가며 자연스럽게 확장합니다.
 
 반드시 JSON으로만 응답하세요:
 {
   "nodes": [
-    {"id": "고유ID", "label": "표시명", "type": "theme|industry|company", "role": "upstream|core|downstream|theme", "ticker": "6자리코드(company만)", "description": "역할 한줄설명"}
+    {"id": "고유ID", "label": "표시명", "type": "theme|industry|company", "role": "upstream|core|downstream|theme", "ticker": "6자리코드(company만)", "description": "왜 이게 필요한지 한줄 (예: AI 연산에 GPU가 필요하므로)"}
   ],
   "edges": [
-    {"from": "공급자ID", "to": "수요자ID", "label": "무엇을 공급/납품하는지", "flowType": "supply|product|service|demand"}
+    {"from": "출발노드ID", "to": "도착노드ID", "label": "왜 연결되는지 (예: 연산 처리에 반도체 필요, HBM 메모리 납품)", "flowType": "supply|product|service|demand"}
   ]
 }
 
 규칙:
 1. 중심 테마 노드 1개 (type: "theme", role: "theme")
-2. Upstream 산업 3-4개 + 각 산업별 종목 2-3개 (role: "upstream")
-3. Core 산업 2-3개 + 각 산업별 종목 2-3개 (role: "core")
-4. Downstream 산업 2-3개 + 각 산업별 종목 2-3개 (role: "downstream")
-5. edge 방향 = 돈/제품 흐름 방향 (from=공급자 → to=수요자). flowType으로 구분:
-   - supply: 원재료/부품 공급
-   - product: 완제품 납품
-   - service: 서비스 제공
-   - demand: 최종 수요/구매
-6. 반드시 실존 한국 상장 종목 (종목코드 6자리 필수), 코스피+코스닥 혼합
-7. 대형주만 나열 금지. 중소형 핵심 부품사/장비사도 반드시 포함
-8. edge의 label은 구체적으로 (예: "반도체 웨이퍼 공급", "OLED 패널 납품", "클라우드 인프라 구매")
-9. 총 노드 25-40개, edge 25-50개
-10. 절대 종목을 잘못 분류하지 마세요. 셀트리온/셀트리온헬스케어는 바이오, 삼성전자는 반도체/가전, 현대차는 자동차입니다. 해당 테마와 실제 사업이 무관한 종목은 포함하지 마세요.
-11. 확실하지 않은 종목은 넣지 마세요. 틀린 정보보다 적은 정보가 낫습니다.`;
+2. "왜?"를 따라가며 산업 노드를 연쇄적으로 연결. 최소 5-8개 산업 분기
+3. 각 산업에서 실제 한국 상장 종목 2-4개씩 연결
+4. 종목 간에도 납품/공급 관계가 있으면 직접 연결 (예: SK하이닉스→삼성전자 HBM 공급)
+5. role 분류: 원재료/부품/장비 쪽은 upstream, 핵심 제품/서비스는 core, 최종 수요/고객은 downstream
+6. edge 방향 = 공급→수요 흐름. label에 "왜 연결되는지" 구체적으로
+7. 반드시 실존 한국 상장 종목 (종목코드 6자리 필수), 코스피+코스닥 혼합
+8. 대형주만 금지. 숨겨진 중소형 부품사/장비사/소재사 반드시 포함
+9. 해당 테마와 실제 사업이 무관한 종목은 절대 포함 금지. 확실하지 않으면 넣지 마세요.
+10. 총 노드 25-40개, edge 25-50개`;
 
 export async function GET(request: NextRequest) {
   const theme = request.nextUrl.searchParams.get("theme")?.trim();
