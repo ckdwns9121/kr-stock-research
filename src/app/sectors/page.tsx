@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import { SECTORS } from "@/lib/sectors";
 import { fetchStockSummary, fetchNaverMetrics } from "@/lib/api/naver";
 import { SectorGrid } from "@/components/sector/SectorGrid";
+import { SectorOverview } from "@/components/sector/SectorOverview";
+import { SectorFundFlow } from "@/components/sector/SectorFundFlow";
+import { SectorRotation } from "@/components/sector/SectorRotation";
 import type { StockSummary } from "@/types/stock";
 import type { FinancialMetrics } from "@/types/financial";
 
@@ -34,6 +37,17 @@ export default async function SectorsPage() {
     }
   });
 
+  const sectorFlowData = SECTORS.map((sector) => {
+    const changes = sector.stocks
+      .map((st) => priceData[st.ticker]?.changePercent)
+      .filter((v): v is number => v !== undefined && !isNaN(v));
+    const avgChangePercent =
+      changes.length > 0
+        ? changes.reduce((a, b) => a + b, 0) / changes.length
+        : 0;
+    return { name: sector.name, emoji: sector.emoji, avgChangePercent };
+  });
+
   return (
     <div className="space-y-6">
       <section className="pt-4">
@@ -43,7 +57,13 @@ export default async function SectorsPage() {
         </p>
       </section>
 
+      <SectorOverview />
+
       <SectorGrid sectors={SECTORS} priceData={priceData} metricsData={metricsData} />
+
+      <SectorFundFlow sectors={sectorFlowData} />
+
+      <SectorRotation />
     </div>
   );
 }
