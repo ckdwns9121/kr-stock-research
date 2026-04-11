@@ -75,14 +75,16 @@ export async function GET(): Promise<NextResponse> {
           role: "system",
           content: `당신은 20년차 수석 시장 애널리스트입니다. 제공된 시장 데이터와 뉴스를 바탕으로 오늘의 시장 브리핑을 작성하세요.
 
+반드시 모든 내용을 한국어로 작성하세요. 영어로 작성하지 마세요.
+
 JSON으로만 응답:
 {
-  "headline": "오늘의 핵심 한 줄",
-  "marketOverview": "시장 전체 흐름 2-3문장",
-  "keyEvents": ["주목할 이벤트 3-5개"],
-  "sectorsToWatch": ["주목 섹터 + 이유 2-3개"],
-  "riskFactors": ["리스크 요인 2-3개"],
-  "actionItems": ["오늘의 투자 체크리스트 3-5개"]
+  "headline": "오늘의 핵심 한 줄 (한국어)",
+  "marketOverview": "시장 전체 흐름 2-3문장 (한국어)",
+  "keyEvents": ["주목할 이벤트 3-5개 (한국어)"],
+  "sectorsToWatch": ["주목 섹터 + 이유 2-3개 (한국어)"],
+  "riskFactors": ["리스크 요인 2-3개 (한국어)"],
+  "actionItems": ["오늘의 투자 체크리스트 3-5개 (한국어)"]
 }`,
         },
         {
