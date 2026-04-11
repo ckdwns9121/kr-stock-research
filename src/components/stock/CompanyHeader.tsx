@@ -29,7 +29,7 @@ export function CompanyHeader({ ticker, summary }: CompanyHeaderProps) {
       </p>
       <h1 className="text-2xl font-bold text-dark-text-primary">{summary.name}</h1>
       <div className="flex items-baseline gap-3 mt-2">
-        <span className="text-3xl font-bold text-dark-text-primary">
+        <span className="text-xl sm:text-3xl font-bold text-dark-text-primary">
           {formatPrice(summary.currentPrice)}
           <span className="text-lg font-medium ml-1">원</span>
         </span>

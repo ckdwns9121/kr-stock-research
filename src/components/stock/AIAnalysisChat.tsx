@@ -71,7 +71,7 @@ export function AIAnalysisChat({ ticker, companyName }: AIAnalysisChatProps) {
       {/* 플로팅 버튼 */}
       <button
         onClick={() => setOpen((v) => !v)}
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-toss-blue hover:bg-toss-blue-dark text-white rounded-full shadow-lg flex items-center justify-center transition-all hover:scale-105"
+        className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 w-14 h-14 bg-toss-blue hover:bg-toss-blue-dark text-white rounded-full shadow-lg flex items-center justify-center transition-all hover:scale-105"
       >
         {open ? (
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -86,7 +86,7 @@ export function AIAnalysisChat({ ticker, companyName }: AIAnalysisChatProps) {
 
       {/* 채팅 패널 */}
       {open && (
-        <div className="fixed bottom-24 right-6 z-50 w-[420px] max-h-[75vh] bg-dark-card border border-dark-border rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+        <div className="fixed bottom-20 right-4 sm:bottom-24 sm:right-6 z-50 w-[calc(100vw-2rem)] sm:w-[420px] max-h-[80vh] sm:max-h-[75vh] bg-dark-card border border-dark-border rounded-2xl shadow-2xl flex flex-col overflow-hidden">
           {/* 헤더 */}
           <div className="px-5 py-4 border-b border-dark-border flex items-center gap-3 flex-shrink-0">
             <div className="w-8 h-8 bg-toss-blue/15 rounded-full flex items-center justify-center">

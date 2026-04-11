@@ -198,7 +198,7 @@ export default function AnalysisPage() {
       </div>
 
       <form onSubmit={handleSubmit} className="bg-dark-card rounded-xl border border-dark-border p-6 space-y-4">
-        <div className="grid grid-cols-2 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label className="block text-sm font-medium text-dark-text-primary mb-1">
               종목코드 <span className="text-toss-red">*</span>

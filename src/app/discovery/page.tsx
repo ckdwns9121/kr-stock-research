@@ -142,7 +142,7 @@ export default function DiscoveryPage() {
         </div>
 
         {/* Summary cards */}
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <Card>
             <p className="text-xs text-dark-text-muted mb-1">발굴 종목 수</p>
             <p className="text-2xl font-bold text-dark-text-primary">

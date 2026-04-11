@@ -137,7 +137,7 @@ export function PortfolioClient() {
     <div className="space-y-5">
       {/* Summary */}
       {items.length > 0 && (
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
           <Card>
             <p className="text-xs text-dark-text-muted font-medium mb-1">총 투자금액</p>
             <p className="text-lg font-bold text-dark-text-primary">{formatPrice(totalInvested)}원</p>
