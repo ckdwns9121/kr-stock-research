@@ -7,6 +7,7 @@ import { MetricsCard } from "@/components/stock/MetricsCard";
 import { FinancialTable } from "@/components/stock/FinancialTable";
 import { NewsList } from "@/components/stock/NewsList";
 import { AIAnalysisChat } from "@/components/stock/AIAnalysisChat";
+import { WatchlistButton } from "@/components/stock/WatchlistButton";
 import { PeerComparison } from "@/components/stock/PeerComparison";
 import { ConsensusBar } from "@/components/stock/ConsensusBar";
 import { CardSkeleton, ChartSkeleton, NewsListSkeleton } from "@/components/ui/Skeleton";
@@ -128,10 +129,11 @@ export default async function StockPage({ params }: PageProps) {
     <div className="space-y-6">
       <CompanyHeader ticker={ticker} summary={summary} />
 
-      <div className="flex justify-end">
+      <div className="flex justify-end gap-2">
+        <WatchlistButton ticker={ticker} name={summary?.name ?? ticker} />
         <Link
           href={`/analysis?ticker=${ticker}`}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-toss-blue hover:bg-toss-blue-dark text-white text-sm font-semibold rounded-lg transition-colors"
         >
           분석 작성하기
         </Link>

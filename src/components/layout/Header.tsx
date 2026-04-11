@@ -10,6 +10,7 @@ const links = [
   { href: "/portfolio", label: "AI포트폴리오" },
   { href: "/mindmap", label: "마인드맵" },
   { href: "/discovery", label: "발굴" },
+  { href: "/watchlist", label: "관심종목" },
   { href: "/screener", label: "스크리너" },
   { href: "/news", label: "뉴스" },
   { href: "/calendar", label: "캘린더" },
