@@ -31,6 +31,7 @@ export async function GET(request: NextRequest) {
   const nodeId = request.nextUrl.searchParams.get("nodeId")?.trim();
   const nodeLabel = request.nextUrl.searchParams.get("label")?.trim();
   const theme = request.nextUrl.searchParams.get("theme")?.trim();
+  const existing = request.nextUrl.searchParams.get("existing")?.trim() ?? "";
 
   if (!nodeId || !nodeLabel) {
     return NextResponse.json({ nodes: [], edges: [], error: "노드 정보가 필요합니다" });
@@ -47,7 +48,7 @@ export async function GET(request: NextRequest) {
       model: "gpt-4o",
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
-        { role: "user", content: `테마: ${theme ?? "일반"}\n확장할 노드: "${nodeLabel}" (ID: ${nodeId})\n\n이 노드를 더 깊이 파고들어 하위 밸류체인과 관련 종목을 발굴하세요. parentId는 "${nodeId}"입니다.` },
+        { role: "user", content: `테마: ${theme ?? "일반"}\n확장할 노드: "${nodeLabel}" (ID: ${nodeId})\n\n이 노드를 더 깊이 파고들어 하위 밸류체인과 관련 종목을 발굴하세요. parentId는 "${nodeId}"입니다.\n\n기존에 이미 있는 노드들: ${existing}\n이미 있는 종목/산업은 새 노드로 만들지 말고, 기존 ID를 edge의 from/to에 사용하여 연결하세요. 새 종목만 새 노드로 추가하세요.` },
       ],
       temperature: 0.5,
       max_tokens: 1500,

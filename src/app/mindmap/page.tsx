@@ -194,8 +194,9 @@ export default function MindMapPage() {
     setExpanding(node.id);
 
     try {
+      const existingLabels = nodes.map((n) => `${n.label}(${n.id})`).join(",");
       const res = await fetch(
-        `/api/mindmap/expand?nodeId=${encodeURIComponent(node.id)}&label=${encodeURIComponent(node.label)}&theme=${encodeURIComponent(theme)}`
+        `/api/mindmap/expand?nodeId=${encodeURIComponent(node.id)}&label=${encodeURIComponent(node.label)}&theme=${encodeURIComponent(theme)}&existing=${encodeURIComponent(existingLabels)}`
       );
       const data = await res.json();
       if (data.nodes?.length > 0) {
