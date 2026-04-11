@@ -3,29 +3,31 @@ import OpenAI from "openai";
 
 export const dynamic = "force-dynamic";
 
-const SYSTEM_PROMPT = `당신은 한국 주식 시장의 밸류체인/공급망 전문가입니다. 사용자가 선택한 노드를 더 깊이 확장하세요.
+const SYSTEM_PROMPT = `당신은 한국 주식 시장의 밸류체인/공급망 분석 전문가입니다. 사용자가 선택한 노드를 돈/제품 흐름 기준으로 확장하세요.
 
-선택된 노드가 산업이면: 하위 산업과 관련 종목을 발굴
-선택된 노드가 종목(회사)이면: 그 회사의 공급망(납품업체, 하청업체, 부품사, 원재료 공급사)과 고객사를 발굴
+선택된 노드가 산업이면: Upstream(공급) / Core(핵심) / Downstream(수요)로 나누어 하위 산업과 종목 발굴
+선택된 노드가 종목(회사)이면: 그 회사에게 납품하는 Upstream 기업 + 그 회사가 납품하는 Downstream 고객사를 발굴
 
 반드시 JSON으로만 응답하세요:
 {
   "nodes": [
-    {"id": "고유ID", "label": "표시명", "type": "industry|company", "ticker": "6자리코드(company만)", "description": "한줄설명"}
+    {"id": "고유ID", "label": "표시명", "type": "industry|company", "role": "upstream|core|downstream", "ticker": "6자리코드(company만)", "description": "역할 한줄설명"}
   ],
   "edges": [
-    {"from": "노드ID", "to": "노드ID", "label": "관계설명 (예: 부품 납품, 하청 제조, 고객사)"}
+    {"from": "공급자ID", "to": "수요자ID", "label": "무엇을 공급하는지 구체적으로", "flowType": "supply|product|service|demand"}
   ]
 }
 
 규칙:
-1. 산업 노드 확장: 하위 산업 2-4개 + 관련 종목 3-6개
-2. 종목 노드 확장: 공급업체 3-5개 + 고객사 2-3개 (실존 한국 상장사만)
-3. 반드시 실존하는 한국 상장 종목 (종목코드 6자리 필수)
-4. 대형주뿐 아니라 숨겨진 중소형 핵심 납품업체도 발굴
-5. edge의 label에 관계를 구체적으로 명시 (예: "OLED 패널 납품", "반도체 후공정 장비 공급")
-6. edge의 from/to에 반드시 parentId 포함
-7. 총 노드 8-15개`;
+1. edge 방향 = 돈/제품 흐름 (from=공급자 → to=수요자)
+2. 산업 노드 확장: upstream 하위 산업 2-3개 + downstream 하위 산업 1-2개 + 종목 3-6개
+3. 종목 노드 확장: upstream 납품업체 3-5개(role: upstream) + downstream 고객사 2-3개(role: downstream)
+4. 반드시 실존 한국 상장 종목 (종목코드 6자리 필수)
+5. 대형주뿐 아니라 숨겨진 중소형 핵심 납품업체/부품사 발굴
+6. edge label 구체적으로 (예: "반도체 웨이퍼 공급", "차량용 배터리 납품")
+7. edge의 from/to에 반드시 parentId 포함
+8. 총 노드 8-15개
+9. 절대 종목을 잘못 분류하지 마세요. 해당 회사의 실제 사업과 무관한 연결은 만들지 마세요. 확실하지 않으면 넣지 마세요.`;
 
 export async function GET(request: NextRequest) {
   const nodeId = request.nextUrl.searchParams.get("nodeId")?.trim();

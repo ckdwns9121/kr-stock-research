@@ -8,6 +8,7 @@ interface MindMapNode {
   id: string;
   label: string;
   type: "theme" | "industry" | "company";
+  role?: "upstream" | "core" | "downstream" | "theme";
   ticker?: string;
   description?: string;
   x: number;
@@ -24,6 +25,14 @@ interface MindMapEdge {
 
 const PRESET_THEMES = ["AI", "전기차", "반도체", "방산", "바이오", "로봇", "원전", "2차전지"];
 
+// role 기반 색상 (밸류체인 흐름)
+const ROLE_COLORS: Record<string, string> = {
+  theme: "#3182F6",
+  upstream: "#F04452",   // 빨강 — 공급
+  core: "#FFB300",       // 노랑 — 핵심
+  downstream: "#2AC769", // 초록 — 수요
+};
+
 const NODE_COLORS: Record<string, string> = {
   theme: "#3182F6",
   industry: "#F04452",
@@ -35,6 +44,11 @@ const NODE_RADIUS: Record<string, number> = {
   industry: 28,
   company: 20,
 };
+
+function getNodeColor(node: MindMapNode): string {
+  if (node.role && ROLE_COLORS[node.role]) return ROLE_COLORS[node.role];
+  return NODE_COLORS[node.type] ?? "#666";
+}
 
 function layoutNodes(
   nodes: MindMapNode[],
@@ -263,8 +277,9 @@ export default function MindMapPage() {
       {nodes.length > 0 && (
         <div className="flex items-center gap-4 text-xs text-dark-text-muted">
           <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-[#3182F6]" /> 테마</span>
-          <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-[#F04452]" /> 산업</span>
-          <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-[#2AC769]" /> 종목</span>
+          <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-[#F04452]" /> Upstream (공급)</span>
+          <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-[#FFB300]" /> Core (핵심)</span>
+          <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-full bg-[#2AC769]" /> Downstream (수요)</span>
           <span className="ml-auto">노드 클릭 → 확장 | 스크롤 → 확대/축소 | 드래그 → 이동</span>
         </div>
       )}
@@ -303,6 +318,14 @@ export default function MindMapPage() {
             onMouseUp={handleMouseUp}
             onMouseLeave={handleMouseUp}
           >
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 6" refX="10" refY="3" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 3 L 0 6 z" fill="rgba(255,255,255,0.3)" />
+            </marker>
+            <marker id="arrow-hover" viewBox="0 0 10 6" refX="10" refY="3" markerWidth="8" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 0 L 10 3 L 0 6 z" fill="#3182F6" />
+            </marker>
+          </defs>
           <g transform={`translate(${dimensions.width / 2}, ${dimensions.height / 2}) scale(${zoom}) translate(${-dimensions.width / 2 + pan.x}, ${-dimensions.height / 2 + pan.y})`}>
             {/* Edges */}
             {edges.map((edge, i) => {
@@ -316,8 +339,9 @@ export default function MindMapPage() {
                 <g key={`edge-${i}`}>
                   <line
                     x1={from.x} y1={from.y} x2={to.x} y2={to.y}
-                    stroke={isHovered ? "#3182F6" : "rgba(255,255,255,0.1)"}
+                    stroke={isHovered ? "#3182F6" : "rgba(255,255,255,0.15)"}
                     strokeWidth={isHovered ? 2 : 1}
+                    markerEnd={isHovered ? "url(#arrow-hover)" : "url(#arrow)"}
                   />
                   {edge.label && isHovered && (
                     <text x={mx} y={my - 6} textAnchor="middle" fill="#8B8B95" fontSize="9" fontFamily="Pretendard, sans-serif">
@@ -331,7 +355,7 @@ export default function MindMapPage() {
             {/* Nodes */}
             {nodes.map((node) => {
               const r = NODE_RADIUS[node.type] ?? 20;
-              const color = NODE_COLORS[node.type] ?? "#666";
+              const color = getNodeColor(node);
               const isHovered = hoveredNode === node.id;
               const isExpanding = expanding === node.id;
 
