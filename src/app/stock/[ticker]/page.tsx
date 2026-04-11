@@ -11,7 +11,6 @@ import { PeerComparison } from "@/components/stock/PeerComparison";
 import { ConsensusBar } from "@/components/stock/ConsensusBar";
 import { CardSkeleton, ChartSkeleton, NewsListSkeleton } from "@/components/ui/Skeleton";
 import { fetchStockSummary } from "@/lib/api/naver";
-import { findPeersByIndustry } from "@/lib/api/dart-industry";
 import type { StockSummary } from "@/types/stock";
 import type { FinancialMetrics, FinancialStatement } from "@/types/financial";
 import type { NewsItem } from "@/types/news";
@@ -92,78 +91,17 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-interface PeerData {
-  ticker: string;
-  name: string;
-  price: number;
-  changePercent: number;
-  per?: number;
-  pbr?: number;
-}
-
-async function fetchPeerData(
-  ticker: string,
-  baseUrl: string
-): Promise<{ sectorName: string; peers: PeerData[] } | null> {
-  const peerInfos = await findPeersByIndustry(ticker);
-  if (peerInfos.length === 0) return null;
-
-  const sectorName = peerInfos[0].sectorName;
-
-  // Fetch price data for peers (limit to 8 for speed)
-  const limited = peerInfos.slice(0, 8);
-  const results = await Promise.allSettled(
-    limited.map(async (peer) => {
-      const [summary, metricsPayload] = await Promise.allSettled([
-        fetchStockSummary(peer.ticker),
-        fetchMetrics(peer.ticker, baseUrl),
-      ]);
-      const s = summary.status === "fulfilled" ? summary.value : null;
-      const m = metricsPayload.status === "fulfilled" ? metricsPayload.value.data : null;
-      if (!s) return null;
-      return {
-        ticker: peer.ticker,
-        name: peer.name,
-        price: s.currentPrice,
-        changePercent: s.changePercent,
-        per: m?.per ?? undefined,
-        pbr: m?.pbr ?? undefined,
-      } satisfies PeerData;
-    })
-  );
-
-  // Include current ticker at front
-  const currentSummary = await fetchStockSummary(ticker);
-  const currentMetrics = await fetchMetrics(ticker, baseUrl);
-  const currentEntry: PeerData | null = currentSummary
-    ? {
-        ticker,
-        name: currentSummary.name,
-        price: currentSummary.currentPrice,
-        changePercent: currentSummary.changePercent,
-        per: currentMetrics.data?.per ?? undefined,
-        pbr: currentMetrics.data?.pbr ?? undefined,
-      }
-    : null;
-
-  const peerList = results
-    .flatMap((r) => (r.status === "fulfilled" && r.value !== null ? [r.value] : []));
-
-  const allPeers = currentEntry ? [currentEntry, ...peerList] : peerList;
-  return { sectorName, peers: allPeers };
-}
 
 export default async function StockPage({ params }: PageProps) {
   const { ticker } = await params;
   const baseUrl = await getBaseUrl();
 
-  const [summaryResult, metricsResult, financialsResult, newsResult, peerResult] =
+  const [summaryResult, metricsResult, financialsResult, newsResult] =
     await Promise.allSettled([
       fetchStockSummary(ticker),
       fetchMetrics(ticker, baseUrl),
       fetchFinancials(ticker, baseUrl),
       fetchNews(ticker, baseUrl),
-      fetchPeerData(ticker, baseUrl),
     ]);
 
   const summary: StockSummary | null =
@@ -183,9 +121,6 @@ export default async function StockPage({ params }: PageProps) {
     newsResult.status === "fulfilled"
       ? newsResult.value
       : { data: [], stale: false, cachedAt: undefined };
-
-  const peerPayload =
-    peerResult.status === "fulfilled" ? peerResult.value : null;
 
   const targetPrice = summary ? Math.round(summary.currentPrice * 1.15) : null;
 
@@ -232,15 +167,7 @@ export default async function StockPage({ params }: PageProps) {
         <FinancialTable statements={financialsPayload.data} />
       </Suspense>
 
-      {peerPayload && (
-        <Suspense fallback={<CardSkeleton />}>
-          <PeerComparison
-            ticker={ticker}
-            sectorName={peerPayload.sectorName}
-            peers={peerPayload.peers}
-          />
-        </Suspense>
-      )}
+      <PeerComparison ticker={ticker} />
 
       <Suspense fallback={<NewsListSkeleton />}>
         <NewsList
