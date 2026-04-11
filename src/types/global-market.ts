@@ -25,10 +25,17 @@ export interface AIMarketAnalysis {
   weakSectors: { name: string; reason: string }[];
 }
 
+export interface ExtraAsset {
+  name: string;
+  price: number;
+  changePercent: number;
+}
+
 export interface GlobalMarketData {
   indices: USIndex[];
   macro: MacroIndicators;
   sectors: SectorData[];
+  extraAssets: ExtraAsset[];
   aiAnalysis: AIMarketAnalysis | null;
   cachedAt: number;
 }

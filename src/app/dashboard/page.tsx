@@ -42,28 +42,22 @@ export default async function DashboardPage() {
     fetchExtraAssets().catch(() => []),
   ]);
 
-  const tickerItems: TickerItem[] = [
-    ...dashboard.indices.items.map((idx) => ({
-      name: idx.name,
-      value: idx.value,
-      changePercent: idx.changePercent,
-    })),
-    ...(globalMarket?.indices ?? []).map((idx) => ({
-      name: idx.name,
-      value: idx.price,
-      changePercent: idx.changePercent,
-    })),
-    ...dashboard.macro.items.map((m) => ({
-      name: m.name,
-      value: m.value,
-      changePercent: m.changePercent,
-    })),
-    ...extraAssets.map((a) => ({
-      name: a.name,
-      value: a.price,
-      changePercent: a.changePercent,
-    })),
-  ];
+  // 중복 제거: 같은 이름이면 나중 소스(Yahoo)가 우선
+  const tickerMap = new Map<string, TickerItem>();
+  for (const idx of dashboard.indices.items) {
+    tickerMap.set(idx.name, { name: idx.name, value: idx.value, changePercent: idx.changePercent });
+  }
+  for (const idx of globalMarket?.indices ?? []) {
+    tickerMap.set(idx.name, { name: idx.name, value: idx.price, changePercent: idx.changePercent });
+  }
+  for (const m of dashboard.macro.items) {
+    tickerMap.set(m.name, { name: m.name, value: m.value, changePercent: m.changePercent });
+  }
+  // Yahoo 데이터가 마지막이므로 중복 시 정확한 Yahoo 값으로 덮어씀
+  for (const a of extraAssets) {
+    tickerMap.set(a.name, { name: a.name, value: a.price, changePercent: a.changePercent });
+  }
+  const tickerItems: TickerItem[] = Array.from(tickerMap.values());
 
   return (
     <div className="space-y-6">

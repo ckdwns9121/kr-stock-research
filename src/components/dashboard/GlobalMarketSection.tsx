@@ -79,6 +79,32 @@ export function GlobalMarketSection({ data }: Props) {
         </div>
       </Card>
 
+      {/* 주요 자산 */}
+      {data.extraAssets.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">주요 자산</CardTitle>
+          </CardHeader>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            {data.extraAssets.map((asset) => {
+              const changeColor = getChangeColor(asset.changePercent);
+              const sign = asset.changePercent >= 0 ? "+" : "";
+              return (
+                <Card key={asset.name} className="bg-dark-elevated">
+                  <p className="text-xs font-medium text-dark-text-secondary mb-1">{asset.name}</p>
+                  <p className="text-xl font-bold text-dark-text-primary">
+                    ${asset.price.toLocaleString("en-US", { minimumFractionDigits: 2 })}
+                  </p>
+                  <p className={`text-sm font-semibold mt-1 ${changeColor}`}>
+                    {sign}{asset.changePercent.toFixed(2)}%
+                  </p>
+                </Card>
+              );
+            })}
+          </div>
+        </Card>
+      )}
+
       {/* AI 분석 */}
       <Card>
         <CardHeader>

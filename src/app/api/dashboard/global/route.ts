@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
-import { fetchUSIndices, fetchMacroIndicators, fetchUSSectors } from "@/lib/api/yahoo";
+import { fetchUSIndices, fetchMacroIndicators, fetchUSSectors, fetchExtraAssets } from "@/lib/api/yahoo";
 import type { GlobalMarketData, AIMarketAnalysis } from "@/types/global-market";
 
 const CACHE_TTL_MS = 30 * 60 * 1000; // 30 minutes
@@ -80,10 +80,11 @@ export async function GET() {
     return NextResponse.json(cache.data);
   }
 
-  const [indices, macro, sectors] = await Promise.all([
+  const [indices, macro, sectors, extraAssets] = await Promise.all([
     fetchUSIndices(),
     fetchMacroIndicators(),
     fetchUSSectors(),
+    fetchExtraAssets().catch(() => []),
   ]);
 
   const aiAnalysis = await generateAIAnalysis({ indices, macro, sectors });
@@ -92,6 +93,7 @@ export async function GET() {
     indices,
     macro: macro ?? { vix: 0, tenYearYield: 0, dxy: 0 },
     sectors,
+    extraAssets,
     aiAnalysis,
     cachedAt: now,
   };
