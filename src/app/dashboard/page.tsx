@@ -13,6 +13,7 @@ import { StockRankingTable } from "@/components/dashboard/StockRankingTable";
 import { MarketTickerBar } from "@/components/dashboard/MarketTickerBar";
 import type { TickerItem } from "@/components/dashboard/MarketTickerBar";
 import { SectorHeatmap } from "@/components/dashboard/SectorHeatmap";
+import { FearGreedGauge } from "@/components/dashboard/FearGreedGauge";
 import { fetchExtraAssets } from "@/lib/api/yahoo";
 
 export const metadata: Metadata = {
@@ -70,6 +71,8 @@ export default async function DashboardPage() {
       </section>
 
       <GlobalMarketSection data={globalMarket} />
+
+      <FearGreedGauge />
 
       {/* 오늘의 해석 */}
       <section>

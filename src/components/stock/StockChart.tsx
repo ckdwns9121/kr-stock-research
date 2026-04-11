@@ -185,20 +185,30 @@ export function StockChart({ ticker }: StockChartProps) {
     <Card>
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-dark-text-primary">주가 차트</h3>
-        <div className="flex gap-1">
-          {PERIODS.map((p) => (
-            <button
-              key={p}
-              onClick={() => handlePeriodChange(p)}
-              className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${
-                activePeriod === p
-                  ? "bg-toss-blue text-white"
-                  : "text-dark-text-secondary hover:bg-dark-elevated"
-              }`}
-            >
-              {p}
-            </button>
-          ))}
+        <div className="flex items-center gap-2">
+          <div className="flex gap-1">
+            {PERIODS.map((p) => (
+              <button
+                key={p}
+                onClick={() => handlePeriodChange(p)}
+                className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-colors ${
+                  activePeriod === p
+                    ? "bg-toss-blue text-white"
+                    : "text-dark-text-secondary hover:bg-dark-elevated"
+                }`}
+              >
+                {p}
+              </button>
+            ))}
+          </div>
+          <a
+            href={`https://www.tradingview.com/chart/?symbol=KRX:${ticker}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-2.5 py-1 rounded-lg text-xs font-medium bg-dark-elevated text-dark-text-secondary hover:text-dark-text-primary transition-colors"
+          >
+            TradingView ↗
+          </a>
         </div>
       </div>
 
