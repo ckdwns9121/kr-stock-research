@@ -3,6 +3,36 @@ import OpenAI from "openai";
 
 export const dynamic = "force-dynamic";
 
+interface CorpEntry {
+  ticker: string;
+  corpCode: string;
+  market?: string;
+}
+
+let tickerToName: Map<string, string> | null = null;
+
+async function loadTickerMap() {
+  if (tickerToName) return;
+  const data = await import("@/data/corp-codes.json");
+  const corpMap = data.default as Record<string, CorpEntry>;
+  tickerToName = new Map<string, string>();
+  for (const [name, entry] of Object.entries(corpMap)) {
+    tickerToName.set(entry.ticker, name);
+  }
+}
+
+function validateNodes(nodes: { id: string; label: string; type: string; ticker?: string; [k: string]: unknown }[]) {
+  if (!tickerToName) return nodes;
+  return nodes.map((node) => {
+    if (node.type !== "company" || !node.ticker) return node;
+    const correctName = tickerToName!.get(node.ticker);
+    if (correctName && correctName !== node.label) {
+      return { ...node, label: correctName };
+    }
+    return node;
+  });
+}
+
 const SYSTEM_PROMPT = `당신은 한국 주식 시장의 밸류체인 탐색 전문가입니다. 사용자가 선택한 노드를 "왜?"를 따라가며 꼬리에 꼬리를 물어 확장하세요.
 
 선택된 노드가 산업이면:
@@ -65,8 +95,10 @@ export async function GET(request: NextRequest) {
     const raw = completion.choices[0]?.message?.content ?? "{}";
     const parsed = JSON.parse(raw);
 
+    await loadTickerMap();
+    const rawNodes = Array.isArray(parsed.nodes) ? parsed.nodes : [];
     return NextResponse.json({
-      nodes: Array.isArray(parsed.nodes) ? parsed.nodes : [],
+      nodes: validateNodes(rawNodes),
       edges: Array.isArray(parsed.edges) ? parsed.edges : [],
     });
   } catch {

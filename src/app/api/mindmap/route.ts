@@ -28,6 +28,38 @@ interface MindMapResponse {
 const CACHE_TTL = 60 * 60 * 1000; // 1시간
 const cache = new Map<string, { data: MindMapResponse; timestamp: number }>();
 
+interface CorpEntry {
+  ticker: string;
+  corpCode: string;
+  market?: string;
+}
+
+let corpMap: Record<string, CorpEntry> | null = null;
+let tickerToName: Map<string, string> | null = null;
+
+async function loadCorpMap() {
+  if (corpMap && tickerToName) return;
+  const data = await import("@/data/corp-codes.json");
+  corpMap = data.default as Record<string, CorpEntry>;
+  tickerToName = new Map<string, string>();
+  for (const [name, entry] of Object.entries(corpMap)) {
+    tickerToName.set(entry.ticker, name);
+  }
+}
+
+// GPT 결과에서 종목코드↔이름 불일치를 corp-codes.json으로 교정
+function validateNodes(nodes: MindMapNode[]): MindMapNode[] {
+  if (!tickerToName) return nodes;
+  return nodes.map((node) => {
+    if (node.type !== "company" || !node.ticker) return node;
+    const correctName = tickerToName!.get(node.ticker);
+    if (correctName && correctName !== node.label) {
+      return { ...node, label: correctName };
+    }
+    return node;
+  });
+}
+
 const SYSTEM_PROMPT = `당신은 한국 주식 시장의 밸류체인 탐색 전문가입니다. 사용자가 제시한 테마를 기반으로 "왜?"라는 질문을 꼬리에 꼬리를 물며 따라가면서 관련 산업과 종목을 연쇄적으로 발굴하세요.
 
 탐색 방식 (예시: AI 테마):
@@ -95,8 +127,10 @@ export async function GET(request: NextRequest) {
     const raw = completion.choices[0]?.message?.content ?? "{}";
     const parsed = JSON.parse(raw);
 
+    await loadCorpMap();
+    const rawNodes: MindMapNode[] = Array.isArray(parsed.nodes) ? parsed.nodes : [];
     const result: MindMapResponse = {
-      nodes: Array.isArray(parsed.nodes) ? parsed.nodes : [],
+      nodes: validateNodes(rawNodes),
       edges: Array.isArray(parsed.edges) ? parsed.edges : [],
     };
 
