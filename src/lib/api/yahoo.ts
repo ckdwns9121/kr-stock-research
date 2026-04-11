@@ -44,6 +44,25 @@ async function getQuote(symbol: string) {
   }
 }
 
+const EXTRA_ASSETS = [
+  { symbol: "GC=F", name: "금" },
+  { symbol: "BTC-USD", name: "비트코인" },
+  { symbol: "ETH-USD", name: "이더리움" },
+];
+
+export async function fetchExtraAssets(): Promise<{ name: string; price: number; changePercent: number }[]> {
+  const results = await Promise.allSettled(
+    EXTRA_ASSETS.map(async ({ symbol, name }) => {
+      const quote = await getQuote(symbol);
+      if (!quote) return null;
+      return { name, price: quote.price, changePercent: quote.changePercent };
+    })
+  );
+  return results
+    .map((r) => (r.status === "fulfilled" ? r.value : null))
+    .filter((v): v is { name: string; price: number; changePercent: number } => v !== null);
+}
+
 export async function fetchUSIndices(): Promise<USIndex[]> {
   const results = await Promise.allSettled(
     INDICES.map(async ({ symbol, name }) => {

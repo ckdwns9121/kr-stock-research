@@ -13,15 +13,26 @@ interface MarketTickerBarProps {
 export function MarketTickerBar({ items }: MarketTickerBarProps) {
   if (items.length === 0) return null;
 
+  // 마퀴 효과를 위해 아이템을 2번 반복
+  const doubled = [...items, ...items];
+
   return (
-    <div
-      className="bg-dark-card border-b border-dark-border overflow-x-auto"
-      style={{ scrollbarWidth: "none" }}
-    >
-      <style>{`.ticker-bar::-webkit-scrollbar { display: none; }`}</style>
-      <div className="ticker-bar flex items-center gap-0 min-w-max px-4 py-2">
-        {items.map((item, i) => (
-          <div key={item.name} className="flex items-center">
+    <div className="bg-dark-card border-b border-dark-border overflow-hidden">
+      <style>{`
+        @keyframes marquee {
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        .marquee-track {
+          animation: marquee 30s linear infinite;
+        }
+        .marquee-track:hover {
+          animation-play-state: paused;
+        }
+      `}</style>
+      <div className="marquee-track flex items-center gap-0 min-w-max py-2">
+        {doubled.map((item, i) => (
+          <div key={`${item.name}-${i}`} className="flex items-center">
             {i > 0 && (
               <span className="w-px h-3 bg-dark-border mx-3 shrink-0" />
             )}

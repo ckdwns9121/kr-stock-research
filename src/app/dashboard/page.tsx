@@ -13,6 +13,7 @@ import { StockRankingTable } from "@/components/dashboard/StockRankingTable";
 import { MarketTickerBar } from "@/components/dashboard/MarketTickerBar";
 import type { TickerItem } from "@/components/dashboard/MarketTickerBar";
 import { SectorHeatmap } from "@/components/dashboard/SectorHeatmap";
+import { fetchExtraAssets } from "@/lib/api/yahoo";
 
 export const metadata: Metadata = {
   title: "매크로 시황 대시보드 - 주식리서치",
@@ -35,9 +36,10 @@ async function fetchGlobalMarketData(baseUrl: string): Promise<GlobalMarketData 
 
 export default async function DashboardPage() {
   const baseUrl = process.env.NEXT_PUBLIC_BASE_URL ?? "http://localhost:3000";
-  const [dashboard, globalMarket] = await Promise.all([
+  const [dashboard, globalMarket, extraAssets] = await Promise.all([
     fetchMacroDashboardData(),
     fetchGlobalMarketData(baseUrl),
+    fetchExtraAssets().catch(() => []),
   ]);
 
   const tickerItems: TickerItem[] = [
@@ -55,6 +57,11 @@ export default async function DashboardPage() {
       name: m.name,
       value: m.value,
       changePercent: m.changePercent,
+    })),
+    ...extraAssets.map((a) => ({
+      name: a.name,
+      value: a.price,
+      changePercent: a.changePercent,
     })),
   ];
 
