@@ -7,7 +7,7 @@ const links = [
   { href: "/", label: "홈" },
   { href: "/dashboard", label: "시황" },
   { href: "/sectors", label: "섹터" },
-  { href: "/portfolio", label: "포트폴리오" },
+  { href: "/portfolio", label: "AI포트폴리오" },
   { href: "/discovery", label: "발굴" },
   { href: "/screener", label: "스크리너" },
   { href: "/news", label: "뉴스" },
