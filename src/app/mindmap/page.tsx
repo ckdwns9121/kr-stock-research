@@ -142,6 +142,14 @@ export default function MindMapPage() {
   const [expanding, setExpanding] = useState<string | null>(null);
   const [selectedNode, setSelectedNode] = useState<MindMapNode | null>(null);
   const [hoveredNode, setHoveredNode] = useState<string | null>(null);
+  const [analyzing, setAnalyzing] = useState(false);
+  const [report, setReport] = useState<{
+    themeSummary: string;
+    topPicks: { name: string; ticker: string; reason: string }[];
+    chainAnalysis: string;
+    riskChain: string;
+    investStrategy: string;
+  } | null>(null);
   const svgRef = useRef<SVGSVGElement>(null);
   const [dimensions, setDimensions] = useState({ width: 900, height: 600 });
   const [zoom, setZoom] = useState(1);
@@ -166,6 +174,7 @@ export default function MindMapPage() {
     setNodes([]);
     setEdges([]);
     setSelectedNode(null);
+    setReport(null);
 
     try {
       const res = await fetch(`/api/mindmap?theme=${encodeURIComponent(t.trim())}`);
@@ -228,6 +237,22 @@ export default function MindMapPage() {
     } catch { /* ignore */ }
     setExpanding(null);
   }, [nodes, edges, theme, dimensions]);
+
+  const analyzeChain = useCallback(async () => {
+    if (nodes.length === 0) return;
+    setAnalyzing(true);
+    setReport(null);
+    try {
+      const res = await fetch("/api/mindmap/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nodes, edges, theme }),
+      });
+      const data = await res.json();
+      setReport(data.report ?? null);
+    } catch { /* ignore */ }
+    setAnalyzing(false);
+  }, [nodes, edges, theme]);
 
   return (
     <div className="space-y-4">
@@ -453,6 +478,98 @@ export default function MindMapPage() {
             </div>
           </div>
         </Card>
+      )}
+
+      {/* 분석 버튼 + 리포트 */}
+      {nodes.length > 0 && (
+        <>
+          <button
+            onClick={analyzeChain}
+            disabled={analyzing}
+            className="w-full py-3 bg-toss-blue hover:bg-toss-blue-dark disabled:bg-dark-elevated disabled:text-dark-text-muted text-white font-semibold rounded-xl transition-colors"
+          >
+            {analyzing ? "실시간 데이터 수집 + AI 분석 중..." : "🔍 AI 밸류체인 분석 리포트 생성"}
+          </button>
+
+          {/* 우측 슬라이드 패널 */}
+          {(analyzing || report) && (
+            <div className="fixed inset-0 z-50 flex justify-end" onClick={() => { if (!analyzing) setReport(null); }}>
+              <div className="absolute inset-0 bg-black/40" />
+              <div
+                className="relative w-full sm:w-[480px] h-full bg-dark-card border-l border-dark-border overflow-y-auto"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* 헤더 */}
+                <div className="sticky top-0 bg-dark-card border-b border-dark-border px-5 py-4 flex items-center justify-between z-10">
+                  <h2 className="text-base font-bold text-dark-text-primary">📊 AI 밸류체인 분석</h2>
+                  {!analyzing && (
+                    <button onClick={() => setReport(null)} className="text-dark-text-muted hover:text-dark-text-primary p-1">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                    </button>
+                  )}
+                </div>
+
+                <div className="p-5 space-y-4">
+                  {analyzing && (
+                    <div className="flex flex-col items-center gap-3 py-12">
+                      <div className="flex gap-1">
+                        <span className="w-2 h-2 bg-toss-blue rounded-full animate-bounce" style={{ animationDelay: "0ms" }} />
+                        <span className="w-2 h-2 bg-toss-blue rounded-full animate-bounce" style={{ animationDelay: "150ms" }} />
+                        <span className="w-2 h-2 bg-toss-blue rounded-full animate-bounce" style={{ animationDelay: "300ms" }} />
+                      </div>
+                      <p className="text-sm text-dark-text-secondary">종목별 실시간 시세 + 뉴스 수집 중...</p>
+                    </div>
+                  )}
+
+                  {report && (
+                    <>
+                      <div className="bg-dark-elevated rounded-xl p-4 border border-toss-blue/20">
+                        <p className="text-xs font-semibold text-toss-blue mb-2">📌 테마 요약</p>
+                        <p className="text-sm text-dark-text-primary leading-relaxed">{report.themeSummary}</p>
+                      </div>
+
+                      <div className="bg-dark-elevated rounded-xl p-4 border border-toss-red/20">
+                        <p className="text-xs font-semibold text-toss-red mb-3">🏆 핵심 수혜주 TOP {report.topPicks.length}</p>
+                        <div className="space-y-3">
+                          {report.topPicks.map((pick, i) => (
+                            <div key={pick.ticker} className="flex items-start gap-3">
+                              <span className="flex-shrink-0 w-6 h-6 bg-toss-red/15 text-toss-red rounded-full flex items-center justify-center text-xs font-bold">{i + 1}</span>
+                              <div>
+                                <Link href={`/stock/${pick.ticker}`} className="text-sm font-semibold text-dark-text-primary hover:text-toss-blue">
+                                  {pick.name} <span className="text-dark-text-muted font-normal">({pick.ticker})</span>
+                                </Link>
+                                <p className="text-xs text-dark-text-secondary mt-0.5 leading-relaxed">{pick.reason}</p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="bg-dark-elevated rounded-xl p-4 border border-toss-green/20">
+                        <p className="text-xs font-semibold text-toss-green mb-2">🔗 꼬리에 꼬리를 무는 분석</p>
+                        <p className="text-sm text-dark-text-primary leading-relaxed whitespace-pre-line">{report.chainAnalysis}</p>
+                      </div>
+
+                      <div className="bg-dark-elevated rounded-xl p-4 border border-yellow-500/20">
+                        <p className="text-xs font-semibold text-yellow-400 mb-2">⚠️ 리스크 체인</p>
+                        <p className="text-sm text-dark-text-primary leading-relaxed">{report.riskChain}</p>
+                      </div>
+
+                      <div className="bg-dark-elevated rounded-xl p-4 border border-dark-border">
+                        <p className="text-xs font-semibold text-dark-text-primary mb-2">💡 투자 전략</p>
+                        <p className="text-sm text-dark-text-primary leading-relaxed">{report.investStrategy}</p>
+                      </div>
+
+                      <p className="text-[11px] text-dark-text-muted text-center pb-4">
+                        ⚠️ 실시간 시세 + 뉴스 기반 AI 분석 · 투자 판단의 책임은 본인에게 있습니다
+                      </p>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+        </>
       )}
 
       {/* 통계 */}
